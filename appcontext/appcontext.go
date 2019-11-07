@@ -20,9 +20,7 @@ func check(err error) {
 }
 
 func InitContext() {
-	db, err := sqlx.Open("postgres", config.GetDatabaseConnectionString())
-	check(err)
-	err = db.Ping()
+	db, err := sqlx.Connect("postgres", config.GetDatabaseConnectionString())
 	check(err)
 	context = &appContext{db}
 }
