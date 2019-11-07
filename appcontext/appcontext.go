@@ -1,6 +1,8 @@
 package appcontext
 
 import (
+	"userland/config"
+
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
@@ -18,7 +20,7 @@ func check(err error) {
 }
 
 func InitContext() {
-	db, err := sqlx.Open("postgres", "dbname=userland host=localhost port=5432 sslmode=disable")
+	db, err := sqlx.Open("postgres", config.GetDatabaseConnectionString())
 	check(err)
 	err = db.Ping()
 	check(err)
