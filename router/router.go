@@ -1,7 +1,7 @@
 package router
 
 import (
-	"userland/util"
+	"userland/controllers"
 
 	"github.com/gorilla/mux"
 )
@@ -15,5 +15,5 @@ func GetRouter() *mux.Router {
 }
 
 func setupRouteHandler(router *mux.Router) {
-	router.HandleFunc("/ping", util.Ping).Methods("GET")
+	router.HandleFunc("/ping", controllers.Ping).Methods("GET")
 }
