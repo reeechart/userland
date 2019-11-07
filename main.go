@@ -5,10 +5,12 @@ import (
 	"log"
 	"net/http"
 
+	"userland/appcontext"
 	"userland/router"
 )
 
 func main() {
+	appcontext.InitContext()
 	router := router.GetRouter()
 
 	fmt.Println("Server is listening at 8080")
