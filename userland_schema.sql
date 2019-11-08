@@ -39,13 +39,16 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE "user" (
-    id bigint NOT NULL,
+    id integer NOT NULL,
     fullname character varying(128) NOT NULL,
     email character varying(128) NOT NULL,
     password character varying(255) NOT NULL,
-    verification_token character varying(255),
-    reset_password_token character varying(255),
-    profile_picture bytea
+    location character varying(128),
+    bio character varying(255),
+    web character varying(128),
+    verification_token character varying(32),
+    reset_password_token character varying(32),
+    picture bytea
 );
 
 
@@ -56,6 +59,7 @@ ALTER TABLE "user" OWNER TO ferdinandusrichard;
 --
 
 CREATE SEQUENCE user_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -83,11 +87,7 @@ ALTER TABLE ONLY "user" ALTER COLUMN id SET DEFAULT nextval('user_id_seq'::regcl
 -- Data for Name: user; Type: TABLE DATA; Schema: public; Owner: ferdinandusrichard
 --
 
-COPY "user" (id, fullname, email, password, verification_token, reset_password_token, profile_picture) FROM stdin;
-1	Fullname	email@example.com	$2a$04$tdOMhp0KUDYJiVskKHzRQOZOq80aAS5ISfCFVvzAJNSAF/hRDvyLG	\N	\N	\N
-3	Fullname	full@example.com	$2a$04$eBKBhXMYHhOqtarAnFue0.QIYNywbIZcHeg1nYymXmqELULqSLwMq	\N	\N	\N
-5	Richard	chard@example.com	$2a$04$C2EY0iZEbrrADzch3VjBD.VHjJoN2Rnky5gGj5c6mNRbwpznz6OZy	\N	\N	\N
-6	Richard	ricat@example.com	$2a$04$AQMBXYR/RG2fd7455SkdVu6HtbQiGGkDy6L.tFWjE/EgKCuDYoQcW	\N	\N	\N
+COPY "user" (id, fullname, email, password, location, bio, web, verification_token, reset_password_token, picture) FROM stdin;
 \.
 
 
@@ -95,7 +95,7 @@ COPY "user" (id, fullname, email, password, verification_token, reset_password_t
 -- Name: user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ferdinandusrichard
 --
 
-SELECT pg_catalog.setval('user_id_seq', 6, true);
+SELECT pg_catalog.setval('user_id_seq', 1, false);
 
 
 --
