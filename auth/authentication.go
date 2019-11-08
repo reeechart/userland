@@ -63,3 +63,7 @@ func Verify(w http.ResponseWriter, r *http.Request) {
 
 	response.RespondSuccess(w)
 }
+
+func Login(w http.ResponseWriter, r *http.Request) {
+
+}
