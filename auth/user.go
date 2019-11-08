@@ -5,6 +5,9 @@ type User struct {
 	Fullname           string `json:"fullname"`
 	Email              string `json:"email"`
 	Password           string `json:"password"`
+	Location           string `json:"location"`
+	Bio                string `json:"bio"`
+	Web                string `json:"web"`
 	ProfilePicture     []byte `json:"profile_picture"`
 	VerificationToken  string `json:"verification_token"`
 	ResetPasswordToken string `json:"reset_password_token"`
