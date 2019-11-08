@@ -45,6 +45,15 @@ func (repo *userRepository) verifyUser(recipient string) error {
 	return err
 }
 
+func (repo *userRepository) loginUser(email string, password string) error {
+	user, err := repo.getUserByEmail(email)
+	if err != nil {
+		return err
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	return err
+}
+
 func (repo *userRepository) getUserByEmail(email string) (*User, error) {
 	row, err := repo.db.Queryx(SELECT_USER_BY_EMAIL_QUERY, email)
 	if err != nil {

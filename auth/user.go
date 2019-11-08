@@ -19,6 +19,10 @@ type User struct {
 	CreatedAt          time.Time      `json:"created_at" db:"created_at"`
 }
 
+func (u *User) ableToLogin() bool {
+	return u.Email != "" && u.Password != ""
+}
+
 type userRegistration struct {
 	Fullname        string `json:"fullname"`
 	Email           string `json:"email"`

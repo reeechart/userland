@@ -65,5 +65,23 @@ func Verify(w http.ResponseWriter, r *http.Request) {
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
+	var loginUser User
+	err = json.NewDecoder(r.Body).Decode(&loginUser)
+	defer r.Body.Close()
 
+	if !loginUser.ableToLogin() {
+		err = errors.New("Email must not be empty")
+		response.RespondWithError(w, LOGIN_EMAIL_NOT_PROVIDED, err)
+		return
+	}
+
+	userRepo := getUserRepository()
+	err = userRepo.loginUser(loginUser.Email, loginUser.Password)
+
+	if err != nil {
+		response.RespondWithError(w, LOGIN_PASSWORD_DOES_NOT_MATCH, err)
+		return
+	}
+
+	response.RespondSuccess(w)
 }
