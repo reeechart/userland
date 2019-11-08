@@ -3,7 +3,6 @@ package auth
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"userland/response"
 )
@@ -39,8 +38,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		response.RespondWithError(w, REGISTRATION_UNABLE_TO_EXEC_QUERY, err)
 		return
 	}
-
-	fmt.Println("success")
 
 	response.RespondSuccess(w)
 }

@@ -1,11 +1,5 @@
 package auth
 
-import (
-	"log"
-
-	"golang.org/x/crypto/bcrypt"
-)
-
 type User struct {
 	Id                 int    `json:"id"`
 	Fullname           string `json:"fullname"`
@@ -29,12 +23,4 @@ func (u *userRegistration) hasValidData() bool {
 
 func (u *userRegistration) hasMatchingPassword() bool {
 	return u.Password == u.PasswordConfirm
-}
-
-func (u *userRegistration) hashedPassword() string {
-	hash, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.MinCost)
-	if err != nil {
-		log.Println(err)
-	}
-	return string(hash)
 }
