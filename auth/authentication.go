@@ -41,3 +41,25 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	response.RespondSuccess(w)
 }
+
+func Verify(w http.ResponseWriter, r *http.Request) {
+	var verifReq verificationRequest
+	err = json.NewDecoder(r.Body).Decode(&verifReq)
+	defer r.Body.Close()
+
+	if !verifReq.isValid() {
+		err = errors.New("Verification request incomplete")
+		response.RespondWithError(w, VERIFICATION_BODY_INCOMPLETE, err)
+		return
+	}
+
+	userRepo := getUserRepository()
+	err = userRepo.verifyUser(verifReq.Recipient)
+
+	if err != nil {
+		response.RespondWithError(w, VERIFICATION_UNABLE_TO_EXEC_QUERY, err)
+		return
+	}
+
+	response.RespondSuccess(w)
+}

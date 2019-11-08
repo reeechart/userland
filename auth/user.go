@@ -1,21 +1,22 @@
 package auth
 
 import (
+	"database/sql"
 	"time"
 )
 
 type User struct {
-	Id                 int       `json:"id"`
-	Fullname           string    `json:"fullname"`
-	Email              string    `json:"email"`
-	Password           string    `json:"password"`
-	Location           string    `json:"location"`
-	Bio                string    `json:"bio"`
-	Web                string    `json:"web"`
-	ProfilePicture     []byte    `json:"profile_picture"`
-	VerificationToken  string    `json:"verification_token"`
-	ResetPasswordToken string    `json:"reset_password_token"`
-	CreatedAt          time.Time `json:"created_at"`
+	Id                 int            `json:"id"`
+	Fullname           string         `json:"fullname"`
+	Email              string         `json:"email"`
+	Password           string         `json:"password"`
+	Location           sql.NullString `json:"location"`
+	Bio                sql.NullString `json:"bio"`
+	Web                sql.NullString `json:"web"`
+	ProfilePicture     []byte         `json:"picture" db:"picture"`
+	VerificationToken  sql.NullString `json:"verification_token" db:"verification_token"`
+	ResetPasswordToken sql.NullString `json:"reset_password_token" db:"reset_password_token"`
+	CreatedAt          time.Time      `json:"created_at" db:"created_at"`
 }
 
 type userRegistration struct {
@@ -31,4 +32,13 @@ func (u *userRegistration) hasValidData() bool {
 
 func (u *userRegistration) hasMatchingPassword() bool {
 	return u.Password == u.PasswordConfirm
+}
+
+type verificationRequest struct {
+	Type      string `json:"type"`
+	Recipient string `json:"recipient"`
+}
+
+func (req verificationRequest) isValid() bool {
+	return req.Type != "" && req.Recipient != ""
 }

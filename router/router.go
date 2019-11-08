@@ -18,4 +18,5 @@ func GetRouter() *mux.Router {
 func setupRouteHandler(router *mux.Router) {
 	router.HandleFunc("/api/ping", ping.Ping).Methods("GET")
 	router.HandleFunc("/api/auth/register", auth.Register).Methods("POST")
+	router.HandleFunc("/api/auth/verification", auth.Verify).Methods("POST")
 }
