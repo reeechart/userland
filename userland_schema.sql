@@ -48,7 +48,8 @@ CREATE TABLE "user" (
     web character varying(128),
     verification_token character varying(32),
     reset_password_token character varying(32),
-    picture bytea
+    picture bytea,
+    created_at timestamp without time zone DEFAULT now()
 );
 
 
@@ -87,7 +88,8 @@ ALTER TABLE ONLY "user" ALTER COLUMN id SET DEFAULT nextval('user_id_seq'::regcl
 -- Data for Name: user; Type: TABLE DATA; Schema: public; Owner: ferdinandusrichard
 --
 
-COPY "user" (id, fullname, email, password, location, bio, web, verification_token, reset_password_token, picture) FROM stdin;
+COPY "user" (id, fullname, email, password, location, bio, web, verification_token, reset_password_token, picture, created_at) FROM stdin;
+2	ricat	ricat@example.com	$2a$04$7rtDVgA2JE2ll5kRVQTjFOJce2DLiniHHahriIJ58e90zxXbdt7/6	\N	\N	\N	\N	\N	\N	2019-11-08 16:10:04.388502
 \.
 
 
@@ -95,7 +97,7 @@ COPY "user" (id, fullname, email, password, location, bio, web, verification_tok
 -- Name: user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ferdinandusrichard
 --
 
-SELECT pg_catalog.setval('user_id_seq', 1, false);
+SELECT pg_catalog.setval('user_id_seq', 2, true);
 
 
 --
