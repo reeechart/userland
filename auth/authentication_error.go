@@ -14,7 +14,9 @@ const (
 	FORGET_PASSWORD_UNABLE_TO_EXEC_QUERY   = 110
 	RESET_PASSWORD_PASSWORD_NOT_MATCH      = 111
 	RESET_PASSWORD_UNABLE_TO_EXEC_QUERY    = 112
-	TOKEN_INVALID_SIGNATURE                = 113
-	TOKEN_INVALID_CONTENT                  = 114
-	TOKEN_EXPIRED                          = 115
+	TOKEN_NOT_PROVIDED                     = 113
+	TOKEN_CANNOT_BE_FOUND                  = 114
+	TOKEN_INVALID_SIGNATURE                = 115
+	TOKEN_INVALID_CONTENT                  = 116
+	TOKEN_EXPIRED                          = 117
 )

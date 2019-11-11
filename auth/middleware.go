@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"userland/response"
 
@@ -15,10 +14,10 @@ func WithVerifyJWT(next http.HandlerFunc) http.HandlerFunc {
 
 		if err != nil {
 			if err == http.ErrNoCookie {
-				w.WriteHeader(http.StatusUnauthorized)
+				response.RespondUnauthorized(w, TOKEN_NOT_PROVIDED, err)
 				return
 			}
-			w.WriteHeader(http.StatusBadRequest)
+			response.RespondBadRequest(w, TOKEN_CANNOT_BE_FOUND, err)
 			return
 		}
 
@@ -39,7 +38,6 @@ func WithVerifyJWT(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		if !token.Valid {
-			fmt.Println("invalid token")
 			response.RespondUnauthorized(w, TOKEN_EXPIRED, err)
 			return
 		}
