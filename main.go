@@ -14,5 +14,5 @@ func main() {
 	router := router.GetRouter()
 
 	fmt.Println("Server is listening at 8080")
-	log.Println(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
