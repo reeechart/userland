@@ -13,7 +13,6 @@ var err error
 func Register(w http.ResponseWriter, r *http.Request) {
 	var userRegistrationData userRegistration
 	err = json.NewDecoder(r.Body).Decode(&userRegistrationData)
-	defer r.Body.Close()
 
 	if err != nil {
 		response.RespondBadRequest(w, REGISTRATION_BODY_UNDECODABLE, err)
@@ -46,7 +45,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 func Verify(w http.ResponseWriter, r *http.Request) {
 	var verifReq verificationRequest
 	err = json.NewDecoder(r.Body).Decode(&verifReq)
-	defer r.Body.Close()
 
 	if !verifReq.isValid() {
 		err = errors.New("Verification request incomplete")
@@ -68,7 +66,6 @@ func Verify(w http.ResponseWriter, r *http.Request) {
 func Login(w http.ResponseWriter, r *http.Request) {
 	var loginUser User
 	err = json.NewDecoder(r.Body).Decode(&loginUser)
-	defer r.Body.Close()
 
 	if !loginUser.ableToLogin() {
 		err = errors.New("Incomplete provided credentials")
@@ -103,7 +100,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 func ForgetPassword(w http.ResponseWriter, r *http.Request) {
 	var user User
 	err = json.NewDecoder(r.Body).Decode(&user)
-	defer r.Body.Close()
 
 	if err != nil {
 		response.RespondBadRequest(w, REGISTRATION_BODY_UNDECODABLE, err)
@@ -131,7 +127,6 @@ func ForgetPassword(w http.ResponseWriter, r *http.Request) {
 func ResetPassword(w http.ResponseWriter, r *http.Request) {
 	var req resetPasswordRequest
 	err = json.NewDecoder(r.Body).Decode(&req)
-	defer r.Body.Close()
 
 	if err != nil {
 		response.RespondBadRequest(w, REGISTRATION_BODY_UNDECODABLE, err)
