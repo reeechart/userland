@@ -22,6 +22,10 @@ func RespondSuccess(w http.ResponseWriter) {
 	respondWithJSON(w, http.StatusOK, map[string]bool{"success": true})
 }
 
-func RespondWithError(w http.ResponseWriter, code int, err error) {
-	respondWithJSON(w, http.StatusBadRequest, ErrorResponse{code, err.Error()})
+func RespondBadRequest(w http.ResponseWriter, errCode int, err error) {
+	respondWithJSON(w, http.StatusBadRequest, ErrorResponse{errCode, err.Error()})
+}
+
+func RespondUnauthorized(w http.ResponseWriter, errCode int, err error) {
+	respondWithJSON(w, http.StatusUnauthorized, ErrorResponse{errCode, err.Error()})
 }

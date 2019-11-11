@@ -15,19 +15,19 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	if err != nil {
-		response.RespondWithError(w, REGISTRATION_BODY_UNDECODABLE, err)
+		response.RespondBadRequest(w, REGISTRATION_BODY_UNDECODABLE, err)
 		return
 	}
 
 	if !userRegistrationData.hasValidData() {
 		err = errors.New("Registration data incomplete")
-		response.RespondWithError(w, REGISTRATION_BODY_INCOMPLETE, err)
+		response.RespondBadRequest(w, REGISTRATION_BODY_INCOMPLETE, err)
 		return
 	}
 
 	if !userRegistrationData.hasMatchingPassword() {
 		err = errors.New("Passwords doesn't match")
-		response.RespondWithError(w, REGISTRATION_PASSWORD_NOT_MATCH, err)
+		response.RespondBadRequest(w, REGISTRATION_PASSWORD_NOT_MATCH, err)
 		return
 	}
 
@@ -35,7 +35,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	err = userRepo.createNewUser(userRegistrationData)
 
 	if err != nil {
-		response.RespondWithError(w, REGISTRATION_UNABLE_TO_EXEC_QUERY, err)
+		response.RespondBadRequest(w, REGISTRATION_UNABLE_TO_EXEC_QUERY, err)
 		return
 	}
 
@@ -49,7 +49,7 @@ func Verify(w http.ResponseWriter, r *http.Request) {
 
 	if !verifReq.isValid() {
 		err = errors.New("Verification request incomplete")
-		response.RespondWithError(w, VERIFICATION_BODY_INCOMPLETE, err)
+		response.RespondBadRequest(w, VERIFICATION_BODY_INCOMPLETE, err)
 		return
 	}
 
@@ -57,7 +57,7 @@ func Verify(w http.ResponseWriter, r *http.Request) {
 	err = userRepo.verifyUser(verifReq.Recipient)
 
 	if err != nil {
-		response.RespondWithError(w, VERIFICATION_UNABLE_TO_EXEC_QUERY, err)
+		response.RespondBadRequest(w, VERIFICATION_UNABLE_TO_EXEC_QUERY, err)
 		return
 	}
 
@@ -71,7 +71,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	if !loginUser.ableToLogin() {
 		err = errors.New("Email must not be empty")
-		response.RespondWithError(w, LOGIN_EMAIL_NOT_PROVIDED, err)
+		response.RespondBadRequest(w, LOGIN_EMAIL_NOT_PROVIDED, err)
 		return
 	}
 
@@ -79,7 +79,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	err = userRepo.loginUser(loginUser.Email, loginUser.Password)
 
 	if err != nil {
-		response.RespondWithError(w, LOGIN_PASSWORD_DOES_NOT_MATCH, err)
+		response.RespondUnauthorized(w, LOGIN_PASSWORD_DOES_NOT_MATCH, err)
 		return
 	}
 
