@@ -70,8 +70,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	if !loginUser.ableToLogin() {
-		err = errors.New("Email must not be empty")
-		response.RespondBadRequest(w, LOGIN_EMAIL_NOT_PROVIDED, err)
+		err = errors.New("Incomplete provided credentials")
+		response.RespondBadRequest(w, LOGIN_INCOMPLETE_CREDENTIALS, err)
 		return
 	}
 
