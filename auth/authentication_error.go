@@ -19,4 +19,5 @@ const (
 	TOKEN_INVALID_SIGNATURE                = 115
 	TOKEN_INVALID_CONTENT                  = 116
 	TOKEN_EXPIRED                          = 117
+	TOKEN_EMAIL_DOES_NOT_EXIST             = 118
 )

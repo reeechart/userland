@@ -42,7 +42,14 @@ func WithVerifyJWT(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "email", claims.UserEmail)
+		userRepo := getUserRepository()
+		user, err := userRepo.getUserByEmail(claims.UserEmail)
+		if err != nil {
+			response.RespondBadRequest(w, TOKEN_EMAIL_DOES_NOT_EXIST, err)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), "user", user)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

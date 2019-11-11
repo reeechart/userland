@@ -1,9 +1,12 @@
 package profile
 
 import (
+	"fmt"
 	"net/http"
 )
 
 func GetProfile(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("middleware works :)"))
+	user := r.Context().Value("user")
+	fmt.Println(user)
+	w.Write([]byte("success"))
 }
