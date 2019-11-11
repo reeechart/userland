@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"time"
 	"userland/response"
 )
 
@@ -82,6 +83,19 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		response.RespondUnauthorized(w, LOGIN_PASSWORD_DOES_NOT_MATCH, err)
 		return
 	}
+
+	expirationTime := time.Now().Add(HOURS_IN_DAY * time.Hour)
+	token, err := generateJWT(loginUser, expirationTime)
+	if err != nil {
+		response.RespondInternalError(w, LOGIN_JWT_ERROR, err)
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:    "token",
+		Value:   token,
+		Expires: expirationTime,
+	})
 
 	response.RespondSuccess(w)
 }

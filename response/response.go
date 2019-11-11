@@ -29,3 +29,7 @@ func RespondBadRequest(w http.ResponseWriter, errCode int, err error) {
 func RespondUnauthorized(w http.ResponseWriter, errCode int, err error) {
 	respondWithJSON(w, http.StatusUnauthorized, ErrorResponse{errCode, err.Error()})
 }
+
+func RespondInternalError(w http.ResponseWriter, errCode int, err error) {
+	respondWithJSON(w, http.StatusInternalServerError, ErrorResponse{errCode, err.Error()})
+}
