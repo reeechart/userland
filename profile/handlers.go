@@ -1,9 +1,9 @@
 package profile
 
 import (
-	"fmt"
 	"net/http"
 	"userland/auth"
+	"userland/response"
 )
 
 func GetProfile(w http.ResponseWriter, r *http.Request) {
@@ -11,12 +11,11 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 	userProfile := UserProfile{
 		Id:             user.Id,
 		Fullname:       user.Fullname,
-		Location:       user.Location,
-		Bio:            user.Bio,
-		Web:            user.Web,
+		Location:       user.Location.String,
+		Bio:            user.Bio.String,
+		Web:            user.Web.String,
 		ProfilePicture: user.ProfilePicture,
 		CreatedAt:      user.CreatedAt,
 	}
-	fmt.Println(userProfile)
-	w.Write([]byte("success"))
+	response.RespondSuccessWithBody(w, userProfile)
 }
