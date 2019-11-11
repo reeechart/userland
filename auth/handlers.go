@@ -97,5 +97,5 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		Expires: expirationTime,
 	})
 
-	response.RespondSuccess(w)
+	response.RespondSuccessWithBody(w, map[string]bool{"require_tfa": false})
 }

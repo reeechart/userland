@@ -22,6 +22,10 @@ func RespondSuccess(w http.ResponseWriter) {
 	respondWithJSON(w, http.StatusOK, map[string]bool{"success": true})
 }
 
+func RespondSuccessWithBody(w http.ResponseWriter, payload interface{}) {
+	respondWithJSON(w, http.StatusOK, payload)
+}
+
 func RespondBadRequest(w http.ResponseWriter, errCode int, err error) {
 	respondWithJSON(w, http.StatusBadRequest, ErrorResponse{errCode, err.Error()})
 }
