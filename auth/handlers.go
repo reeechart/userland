@@ -99,3 +99,31 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	response.RespondSuccessWithBody(w, map[string]bool{"require_tfa": false})
 }
+
+func ForgetPassword(w http.ResponseWriter, r *http.Request) {
+	var user User
+	err = json.NewDecoder(r.Body).Decode(&user)
+	defer r.Body.Close()
+
+	if err != nil {
+		response.RespondBadRequest(w, REGISTRATION_BODY_UNDECODABLE, err)
+		return
+	}
+
+	if user.Email == "" {
+		err = errors.New("Incomplete credentials to forget password")
+		response.RespondBadRequest(w, FORGET_PASSWORD_INCOMPLETE_CREDENTIALS, err)
+		return
+	}
+
+	userRepo := getUserRepository()
+	err = userRepo.forgetPassword(user.Email)
+
+	if err != nil {
+		err = errors.New("Error on executing query")
+		response.RespondBadRequest(w, FORGET_PASSWORD_UNABLE_TO_EXEC_QUERY, err)
+		return
+	}
+
+	response.RespondSuccess(w)
+}

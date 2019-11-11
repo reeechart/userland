@@ -8,9 +8,10 @@ import (
 )
 
 const (
-	CREATE_USER_QUERY          = "INSERT INTO \"user\" (fullname, email, password) VALUES ($1, $2, $3)"
-	SELECT_USER_BY_EMAIL_QUERY = "SELECT * FROM \"user\" WHERE email=$1"
-	UPDATE_VERIF_TOKEN_QUERY   = "UPDATE \"user\" SET verification_token=$1 WHERE id=$2"
+	CREATE_USER_QUERY             = "INSERT INTO \"user\" (fullname, email, password) VALUES ($1, $2, $3)"
+	SELECT_USER_BY_EMAIL_QUERY    = "SELECT * FROM \"user\" WHERE email=$1"
+	UPDATE_VERIF_TOKEN_QUERY      = "UPDATE \"user\" SET verification_token=$1 WHERE id=$2"
+	UPDATE_RESET_PASS_TOKEN_QUERY = "UPDATE \"user\" SET reset_password_token=$1 WHERE id=$2"
 )
 
 type userRepositoryInterface interface {
@@ -51,6 +52,15 @@ func (repo *userRepository) loginUser(email string, password string) error {
 		return err
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	return err
+}
+
+func (repo *userRepository) forgetPassword(email string) error {
+	user, err := repo.getUserByEmail(email)
+	if err != nil {
+		return err
+	}
+	_, err = repo.db.Queryx(UPDATE_RESET_PASS_TOKEN_QUERY, generateToken(), user.Id)
 	return err
 }
 
