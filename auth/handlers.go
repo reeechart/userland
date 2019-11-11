@@ -27,7 +27,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !userRegistrationData.hasMatchingPassword() {
-		err = errors.New("Passwords doesn't match")
+		err = errors.New("Passwords don't match")
 		response.RespondBadRequest(w, REGISTRATION_PASSWORD_NOT_MATCH, err)
 		return
 	}
@@ -122,6 +122,33 @@ func ForgetPassword(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		err = errors.New("Error on executing query")
 		response.RespondBadRequest(w, FORGET_PASSWORD_UNABLE_TO_EXEC_QUERY, err)
+		return
+	}
+
+	response.RespondSuccess(w)
+}
+
+func ResetPassword(w http.ResponseWriter, r *http.Request) {
+	var req resetPasswordRequest
+	err = json.NewDecoder(r.Body).Decode(&req)
+	defer r.Body.Close()
+
+	if err != nil {
+		response.RespondBadRequest(w, REGISTRATION_BODY_UNDECODABLE, err)
+		return
+	}
+
+	if !req.hasMatchingPassword() {
+		err = errors.New("Passwords don't match")
+		response.RespondBadRequest(w, RESET_PASSWORD_PASSWORD_NOT_MATCH, err)
+		return
+	}
+
+	userRepo := getUserRepository()
+	err = userRepo.resetPassword(req.Token, req.Password)
+
+	if err != nil {
+		response.RespondBadRequest(w, RESET_PASSWORD_UNABLE_TO_EXEC_QUERY, err)
 		return
 	}
 

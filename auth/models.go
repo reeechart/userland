@@ -46,3 +46,13 @@ type verificationRequest struct {
 func (req verificationRequest) isValid() bool {
 	return req.Type != "" && req.Recipient != ""
 }
+
+type resetPasswordRequest struct {
+	Token           string `json:"token"`
+	Password        string `json:"password"`
+	PasswordConfirm string `json:"password_confirm"`
+}
+
+func (req resetPasswordRequest) hasMatchingPassword() bool {
+	return req.Password == req.PasswordConfirm
+}
