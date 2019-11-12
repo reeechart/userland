@@ -17,3 +17,13 @@ type UserProfile struct {
 type ChangeEmailRequest struct {
 	NewEmail string `json:"email"`
 }
+
+type ChangePasswordRequest struct {
+	PasswordCurrent string `json:"password_current"`
+	Password        string `json:"password"`
+	PasswordConfirm string `json:"password_confirm"`
+}
+
+func (req ChangePasswordRequest) hasMatchingNewPassword() bool {
+	return req.Password == req.PasswordConfirm
+}

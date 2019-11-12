@@ -2,6 +2,7 @@ package profile
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"userland/auth"
 	"userland/response"
@@ -66,6 +67,34 @@ func ChangeEmailAddress(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		response.RespondBadRequest(w, UNABLE_TO_EXEC_UPDATE_EMAIL_QUERY, err)
+		return
+	}
+
+	response.RespondSuccess(w)
+}
+
+func ChangePassword(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value("user").(*auth.User)
+
+	var passwordReq ChangePasswordRequest
+	err = json.NewDecoder(r.Body).Decode(&passwordReq)
+
+	if err != nil {
+		response.RespondBadRequest(w, REQUEST_BODY_UNDECODABLE, err)
+		return
+	}
+
+	if !passwordReq.hasMatchingNewPassword() {
+		err = errors.New("Passwords don't match")
+		response.RespondBadRequest(w, CHANGE_PASSWORD_PASSWORD_NOT_MATCH, err)
+		return
+	}
+
+	repo := getProfileRepository()
+	err = repo.changeUserPassword(user, passwordReq.PasswordCurrent, passwordReq.Password)
+
+	if err != nil {
+		response.RespondBadRequest(w, CHANGE_PASSWORD_INCORRECT_CURRENT_PASSWORD, err)
 		return
 	}
 

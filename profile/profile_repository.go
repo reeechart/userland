@@ -5,11 +5,13 @@ import (
 	"userland/auth"
 
 	"github.com/jmoiron/sqlx"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const (
-	UPDATE_PROFILE_BY_ID_QUERY = "UPDATE \"user\" SET fullname=$1, location=$2, bio=$3, web=$4 WHERE id=$5"
-	CHANGE_EMAIL_BY_ID_QUERY   = "UPDATE \"user\" SET email=$1 WHERE id=$2"
+	UPDATE_PROFILE_BY_ID_QUERY  = "UPDATE \"user\" SET fullname=$1, location=$2, bio=$3, web=$4 WHERE id=$5"
+	CHANGE_EMAIL_BY_ID_QUERY    = "UPDATE \"user\" SET email=$1 WHERE id=$2"
+	CHANGE_PASSWORD_BY_ID_QUERY = "UPDATE \"user\" SET password=$1 WHERE id=$2"
 )
 
 type profileRepository struct {
@@ -28,5 +30,21 @@ func (repo *profileRepository) updateUserProfile(user *auth.User, newUserProfile
 
 func (repo *profileRepository) changeUserEmail(user *auth.User, newEmail string) error {
 	_, err := repo.db.Queryx(CHANGE_EMAIL_BY_ID_QUERY, newEmail, user.Id)
+	return err
+}
+
+func (repo *profileRepository) changeUserPassword(user *auth.User, oldPassword string, newPassword string) error {
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(oldPassword))
+
+	if err != nil {
+		return err
+	}
+
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.MinCost)
+	if err != nil {
+		return err
+	}
+
+	_, err = repo.db.Queryx(CHANGE_PASSWORD_BY_ID_QUERY, passwordHash, user.Id)
 	return err
 }

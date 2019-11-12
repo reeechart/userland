@@ -28,4 +28,5 @@ func setupRouteHandler(router *mux.Router) {
 	router.HandleFunc("/api/me", auth.WithVerifyJWT(profile.UpdateProfile)).Methods("PUT")
 	router.HandleFunc("/api/me/email", auth.WithVerifyJWT(profile.GetEmail)).Methods("GET")
 	router.HandleFunc("/api/me/email", auth.WithVerifyJWT(profile.ChangeEmailAddress)).Methods("PUT")
+	router.HandleFunc("/api/me/password", auth.WithVerifyJWT(profile.ChangePassword)).Methods("POST")
 }
