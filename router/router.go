@@ -25,4 +25,5 @@ func setupRouteHandler(router *mux.Router) {
 	router.HandleFunc("/api/auth/password/reset", auth.ResetPassword).Methods("POST")
 
 	router.HandleFunc("/api/me", auth.WithVerifyJWT(profile.GetProfile)).Methods("GET")
+	router.HandleFunc("/api/me", auth.WithVerifyJWT(profile.UpdateProfile)).Methods("PUT")
 }
