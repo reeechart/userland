@@ -27,3 +27,7 @@ type ChangePasswordRequest struct {
 func (req ChangePasswordRequest) hasMatchingNewPassword() bool {
 	return req.Password == req.PasswordConfirm
 }
+
+type DeleteAccountRequest struct {
+	Password string `json:"password"`
+}

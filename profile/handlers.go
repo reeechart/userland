@@ -100,3 +100,25 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 
 	response.RespondSuccess(w)
 }
+
+func DeleteAccount(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value("user").(*auth.User)
+
+	var delReq DeleteAccountRequest
+	err = json.NewDecoder(r.Body).Decode(&delReq)
+
+	if err != nil {
+		response.RespondBadRequest(w, REQUEST_BODY_UNDECODABLE, err)
+		return
+	}
+
+	repo := getProfileRepository()
+	err = repo.deleteUser(user, delReq.Password)
+
+	if err != nil {
+		response.RespondBadRequest(w, DELETE_ACCOUNT_INCORRECT_PASSWORD, err)
+		return
+	}
+
+	response.RespondSuccess(w)
+}

@@ -12,6 +12,7 @@ const (
 	UPDATE_PROFILE_BY_ID_QUERY  = "UPDATE \"user\" SET fullname=$1, location=$2, bio=$3, web=$4 WHERE id=$5"
 	CHANGE_EMAIL_BY_ID_QUERY    = "UPDATE \"user\" SET email=$1 WHERE id=$2"
 	CHANGE_PASSWORD_BY_ID_QUERY = "UPDATE \"user\" SET password=$1 WHERE id=$2"
+	DELETE_USER_BY_ID_QUERY     = "DELETE FROM \"user\" WHERE id=$1"
 )
 
 type profileRepository struct {
@@ -46,5 +47,16 @@ func (repo *profileRepository) changeUserPassword(user *auth.User, oldPassword s
 	}
 
 	_, err = repo.db.Queryx(CHANGE_PASSWORD_BY_ID_QUERY, passwordHash, user.Id)
+	return err
+}
+
+func (repo *profileRepository) deleteUser(user *auth.User, password string) error {
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+
+	if err != nil {
+		return err
+	}
+
+	_, err = repo.db.Queryx(DELETE_USER_BY_ID_QUERY, user.Id)
 	return err
 }
