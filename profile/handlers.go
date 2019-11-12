@@ -125,10 +125,25 @@ func DeleteAccount(w http.ResponseWriter, r *http.Request) {
 
 func UpdateProfilePicture(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value("user").(*auth.User)
-	picture := r.FormValue("file")
+	file, handler, err := r.FormFile("file")
+
+	if err != nil {
+		response.RespondBadRequest(w, 1000, err)
+		return
+	}
+
+	defer file.Close()
+
+	picture := make([]byte, handler.Size)
+	_, err = file.Read(picture)
+
+	if err != nil {
+		response.RespondBadRequest(w, 2000, err)
+		return
+	}
 
 	repo := getProfileRepository()
-	err = repo.updateUserPicture(user, []byte(picture))
+	err = repo.updateUserPicture(user, picture)
 
 	if err != nil {
 		response.RespondBadRequest(w, PICTURE_FAILED_TO_EXEC_QUERY, err)
