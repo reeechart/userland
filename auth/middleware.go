@@ -43,7 +43,7 @@ func WithVerifyJWT(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		userRepo := getUserRepository()
-		user, err := userRepo.getUserByEmail(claims.UserEmail)
+		user, err := userRepo.getUserById(claims.UserId)
 		if err != nil {
 			response.RespondBadRequest(w, TOKEN_EMAIL_DOES_NOT_EXIST, err)
 			return

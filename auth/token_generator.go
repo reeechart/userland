@@ -20,7 +20,7 @@ const (
 )
 
 type Claims struct {
-	UserEmail string `json:"user_email"`
+	UserId int `json:"user_id"`
 	jwt.StandardClaims
 }
 
@@ -34,7 +34,7 @@ func generateToken() string {
 
 func generateJWT(user User, expirationTime time.Time) (string, error) {
 	claims := Claims{
-		UserEmail: user.Email,
+		UserId: user.Id,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},

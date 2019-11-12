@@ -14,6 +14,7 @@ const (
 	UPDATE_RESET_PASS_TOKEN_QUERY         = "UPDATE \"user\" SET reset_password_token=$1 WHERE id=$2"
 	SELECT_USER_BY_RESET_PASS_TOKEN_QUERY = "SELECT * FROM \"user\" WHERE reset_password_token=$1"
 	UPDATE_PASSWORD_QUERY                 = "UPDATE \"user\" SET password=$1 WHERE id=$2"
+	SELECT_USER_BY_ID_QUERY               = "SELECT * FROM \"user\" WHERE id=$1"
 )
 
 type userRepositoryInterface interface {
@@ -92,6 +93,20 @@ func (repo *userRepository) resetPassword(token string, password string) error {
 
 func (repo *userRepository) getUserByResetPasswordToken(token string) (*User, error) {
 	row, err := repo.db.Queryx(SELECT_USER_BY_RESET_PASS_TOKEN_QUERY, token)
+	if err != nil {
+		return nil, err
+	}
+	var user User
+	row.Next()
+	err = row.StructScan(&user)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (repo *userRepository) getUserById(id int) (*User, error) {
+	row, err := repo.db.Queryx(SELECT_USER_BY_ID_QUERY, id)
 	if err != nil {
 		return nil, err
 	}

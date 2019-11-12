@@ -91,8 +91,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	user, _ := userRepo.getUserByEmail(loginUser.Email)
 	expirationTime := time.Now().Add(HOURS_IN_DAY * time.Hour)
-	token, err := generateJWT(loginUser, expirationTime)
+	token, err := generateJWT(*user, expirationTime)
 	if err != nil {
 		response.RespondInternalError(w, LOGIN_JWT_ERROR, err)
 		return
