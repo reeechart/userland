@@ -137,3 +137,17 @@ func UpdateProfilePicture(w http.ResponseWriter, r *http.Request) {
 
 	response.RespondSuccess(w)
 }
+
+func DeleteProfilePicture(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value("user").(*auth.User)
+
+	repo := getProfileRepository()
+	err = repo.deleteUserPicture(user)
+
+	if err != nil {
+		response.RespondBadRequest(w, PICTURE_FAILED_TO_EXEC_QUERY, err)
+		return
+	}
+
+	response.RespondSuccess(w)
+}

@@ -32,4 +32,5 @@ func setupRouteHandler(router *mux.Router) {
 	router.HandleFunc("/api/me/password", auth.WithVerifyJWT(profile.ChangePassword)).Methods(http.MethodPost)
 	router.HandleFunc("/api/me/delete", auth.WithVerifyJWT(profile.DeleteAccount)).Methods(http.MethodPost)
 	router.HandleFunc("/api/me/picture", auth.WithVerifyJWT(profile.UpdateProfilePicture)).Methods(http.MethodPut)
+	router.HandleFunc("/api/me/picture", auth.WithVerifyJWT(profile.DeleteProfilePicture)).Methods(http.MethodDelete)
 }
