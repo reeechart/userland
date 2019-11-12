@@ -30,7 +30,7 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	err = json.NewDecoder(r.Body).Decode(&userInfo)
 
 	if err != nil {
-		response.RespondBadRequest(w, 100, err)
+		response.RespondBadRequest(w, REQUEST_BODY_UNDECODABLE, err)
 		return
 	}
 
@@ -38,7 +38,7 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	err = repo.updateUserProfile(user, userInfo)
 
 	if err != nil {
-		response.RespondBadRequest(w, 201, err)
+		response.RespondBadRequest(w, UNABLE_TO_UPDATE_PROFILE, err)
 		return
 	}
 

@@ -1,0 +1,6 @@
+package profile
+
+const (
+	REQUEST_BODY_UNDECODABLE = 100
+	UNABLE_TO_UPDATE_PROFILE = 201
+)
