@@ -1,6 +1,7 @@
 package router
 
 import (
+	"net/http"
 	"userland/auth"
 	"userland/ping"
 	"userland/profile"
@@ -17,17 +18,17 @@ func GetRouter() *mux.Router {
 }
 
 func setupRouteHandler(router *mux.Router) {
-	router.HandleFunc("/api/ping", ping.Ping).Methods("GET")
-	router.HandleFunc("/api/auth/register", auth.Register).Methods("POST")
-	router.HandleFunc("/api/auth/verification", auth.Verify).Methods("POST")
-	router.HandleFunc("/api/auth/login", auth.Login).Methods("POST")
-	router.HandleFunc("/api/auth/password/forgot", auth.ForgetPassword).Methods("POST")
-	router.HandleFunc("/api/auth/password/reset", auth.ResetPassword).Methods("POST")
+	router.HandleFunc("/api/ping", ping.Ping).Methods(http.MethodGet)
+	router.HandleFunc("/api/auth/register", auth.Register).Methods(http.MethodPost)
+	router.HandleFunc("/api/auth/verification", auth.Verify).Methods(http.MethodPost)
+	router.HandleFunc("/api/auth/login", auth.Login).Methods(http.MethodPost)
+	router.HandleFunc("/api/auth/password/forgot", auth.ForgetPassword).Methods(http.MethodPost)
+	router.HandleFunc("/api/auth/password/reset", auth.ResetPassword).Methods(http.MethodPost)
 
-	router.HandleFunc("/api/me", auth.WithVerifyJWT(profile.GetProfile)).Methods("GET")
-	router.HandleFunc("/api/me", auth.WithVerifyJWT(profile.UpdateProfile)).Methods("PUT")
-	router.HandleFunc("/api/me/email", auth.WithVerifyJWT(profile.GetEmail)).Methods("GET")
-	router.HandleFunc("/api/me/email", auth.WithVerifyJWT(profile.ChangeEmailAddress)).Methods("PUT")
-	router.HandleFunc("/api/me/password", auth.WithVerifyJWT(profile.ChangePassword)).Methods("POST")
-	router.HandleFunc("/api/me/delete", auth.WithVerifyJWT(profile.DeleteAccount)).Methods("POST")
+	router.HandleFunc("/api/me", auth.WithVerifyJWT(profile.GetProfile)).Methods(http.MethodGet)
+	router.HandleFunc("/api/me", auth.WithVerifyJWT(profile.UpdateProfile)).Methods(http.MethodPut)
+	router.HandleFunc("/api/me/email", auth.WithVerifyJWT(profile.GetEmail)).Methods(http.MethodGet)
+	router.HandleFunc("/api/me/email", auth.WithVerifyJWT(profile.ChangeEmailAddress)).Methods(http.MethodPut)
+	router.HandleFunc("/api/me/password", auth.WithVerifyJWT(profile.ChangePassword)).Methods(http.MethodPost)
+	router.HandleFunc("/api/me/delete", auth.WithVerifyJWT(profile.DeleteAccount)).Methods(http.MethodPost)
 }
