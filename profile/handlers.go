@@ -49,3 +49,25 @@ func GetEmail(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value("user").(*auth.User)
 	response.RespondSuccessWithBody(w, map[string]string{"email": user.Email})
 }
+
+func ChangeEmailAddress(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value("user").(*auth.User)
+
+	var emailReq ChangeEmailRequest
+	err = json.NewDecoder(r.Body).Decode(&emailReq)
+
+	if err != nil {
+		response.RespondBadRequest(w, REQUEST_BODY_UNDECODABLE, err)
+		return
+	}
+
+	repo := getProfileRepository()
+	err = repo.changeUserEmail(user, emailReq.NewEmail)
+
+	if err != nil {
+		response.RespondBadRequest(w, UNABLE_TO_EXEC_UPDATE_EMAIL_QUERY, err)
+		return
+	}
+
+	response.RespondSuccess(w)
+}

@@ -13,3 +13,7 @@ type UserProfile struct {
 	ProfilePicture []byte    `json:"picture" db:"picture"`
 	CreatedAt      time.Time `json:"created_at" db:"created_at"`
 }
+
+type ChangeEmailRequest struct {
+	NewEmail string `json:"email"`
+}
