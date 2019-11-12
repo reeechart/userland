@@ -18,11 +18,6 @@ const (
 	DELETE_RESET_PASS_TOKEN_QUERY         = "UPDATE \"user\" SET reset_password_token=NULL WHERE id=$1"
 )
 
-type userRepositoryInterface interface {
-	createNewUser(user userRegistration)
-	loginUser(user User)
-}
-
 type userRepository struct {
 	db *sqlx.DB
 }
