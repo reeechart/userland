@@ -128,7 +128,7 @@ func UpdateProfilePicture(w http.ResponseWriter, r *http.Request) {
 	file, handler, err := r.FormFile("file")
 
 	if err != nil {
-		response.RespondBadRequest(w, 1000, err)
+		response.RespondBadRequest(w, PICTURE_CANNOT_BE_FETCHED_FROM_FORM, err)
 		return
 	}
 
@@ -138,7 +138,7 @@ func UpdateProfilePicture(w http.ResponseWriter, r *http.Request) {
 	_, err = file.Read(picture)
 
 	if err != nil {
-		response.RespondBadRequest(w, 2000, err)
+		response.RespondBadRequest(w, PICTURE_CANNOT_BE_READ, err)
 		return
 	}
 
