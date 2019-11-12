@@ -44,3 +44,8 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 
 	response.RespondSuccess(w)
 }
+
+func GetEmail(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value("user").(*auth.User)
+	response.RespondSuccessWithBody(w, map[string]string{"email": user.Email})
+}
