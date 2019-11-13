@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	CREATE_USER_QUERY                     = "INSERT INTO \"user\" (fullname, email, password) VALUES ($1, $2, $3) RETURNING id"
+	CREATE_USER_QUERY                     = "INSERT INTO \"user\" (fullname, email, password, verification_token) VALUES ($1, $2, $3, $4)"
 	SELECT_USER_BY_EMAIL_QUERY            = "SELECT * FROM \"user\" WHERE email=$1"
 	UPDATE_VERIF_TOKEN_QUERY              = "UPDATE \"user\" SET verification_token=$1 WHERE id=$2"
 	UPDATE_RESET_PASS_TOKEN_QUERY         = "UPDATE \"user\" SET reset_password_token=$1 WHERE id=$2"
@@ -34,26 +34,7 @@ func (repo *userRepository) createNewUser(user userRegistration) error {
 	if err != nil {
 		return err
 	}
-
-	var (
-		tx        *sqlx.Tx
-		newUserId int
-	)
-
-	tx, err = repo.db.Beginx()
-	err = tx.Get(&newUserId, CREATE_USER_QUERY, user.Fullname, user.Email, string(passwordHash))
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	_, err = tx.Exec(UPDATE_VERIF_TOKEN_QUERY, generateToken(), newUserId)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	err = tx.Commit()
+	_, err = repo.db.Queryx(CREATE_USER_QUERY, user.Fullname, user.Email, string(passwordHash), generateToken())
 	return err
 }
 
