@@ -14,9 +14,8 @@ const (
 	UPDATE_VERIF_TOKEN_QUERY              = "UPDATE \"user\" SET verification_token=$1 WHERE id=$2"
 	UPDATE_RESET_PASS_TOKEN_QUERY         = "UPDATE \"user\" SET reset_password_token=$1 WHERE id=$2"
 	SELECT_USER_BY_RESET_PASS_TOKEN_QUERY = "SELECT * FROM \"user\" WHERE reset_password_token=$1"
-	UPDATE_PASSWORD_QUERY                 = "UPDATE \"user\" SET password=$1 WHERE id=$2"
+	RESET_PASSWORD_QUERY                  = "UPDATE \"user\" SET password=$1, reset_password_token=NULL WHERE id=$2"
 	SELECT_USER_BY_ID_QUERY               = "SELECT * FROM \"user\" WHERE id=$1"
-	DELETE_RESET_PASS_TOKEN_QUERY         = "UPDATE \"user\" SET reset_password_token=NULL WHERE id=$1"
 	UPDATE_VERIFIED_QUERY                 = "UPDATE \"user\" SET verification_token=NULL, verified=true WHERE id=$1"
 )
 
@@ -89,23 +88,13 @@ func (repo *userRepository) resetPassword(token string, password string) error {
 	if err != nil {
 		return err
 	}
-	var tx *sqlx.Tx
+
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
-
-	tx, err = repo.db.Beginx()
-	_, err = tx.Exec(UPDATE_PASSWORD_QUERY, passwordHash, user.Id)
 	if err != nil {
-		tx.Rollback()
 		return err
 	}
 
-	_, err = tx.Exec(DELETE_RESET_PASS_TOKEN_QUERY, user.Id)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	err = tx.Commit()
+	_, err = repo.db.Queryx(RESET_PASSWORD_QUERY, passwordHash, user.Id)
 	return err
 }
 
