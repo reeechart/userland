@@ -2,6 +2,7 @@ package auth
 
 import (
 	"database/sql"
+	"regexp"
 	"time"
 )
 
@@ -40,19 +41,20 @@ func (u *userRegistration) hasMatchingPassword() bool {
 }
 
 func (u *userRegistration) hasValidData() bool {
-	return u.hasValidFullname() && u.hasValidPassword() && u.hasValidEmail()
+	return u.hasValidFullname() && u.hasValidEmail() && u.hasValidPassword()
 }
 
 func (u *userRegistration) hasValidFullname() bool {
 	return len(u.Fullname) <= 128
 }
 
-func (u *userRegistration) hasValidPassword() bool {
-	return len(u.Password) >= 6 && len(u.Password) <= 128
+func (u *userRegistration) hasValidEmail() bool {
+	emailFormatValid := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`).MatchString(u.Email)
+	return len(u.Email) <= 128 && emailFormatValid
 }
 
-func (u *userRegistration) hasValidEmail() bool {
-	return len(u.Email) <= 128
+func (u *userRegistration) hasValidPassword() bool {
+	return len(u.Password) >= 6 && len(u.Password) <= 128
 }
 
 type verificationRequest struct {
