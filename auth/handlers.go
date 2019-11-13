@@ -25,6 +25,12 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !userRegistrationData.hasValidData() {
+		err = errors.New("Registration data invalid")
+		response.RespondBadRequest(w, REGISTRATION_BODY_INVALID, err)
+		return
+	}
+
 	if !userRegistrationData.hasMatchingPassword() {
 		err = errors.New("Passwords don't match")
 		response.RespondBadRequest(w, REGISTRATION_PASSWORD_NOT_MATCH, err)

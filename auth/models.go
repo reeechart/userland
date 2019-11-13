@@ -39,6 +39,22 @@ func (u *userRegistration) hasMatchingPassword() bool {
 	return u.Password == u.PasswordConfirm
 }
 
+func (u *userRegistration) hasValidData() bool {
+	return u.hasValidFullname() && u.hasValidPassword() && u.hasValidEmail()
+}
+
+func (u *userRegistration) hasValidFullname() bool {
+	return len(u.Fullname) <= 128
+}
+
+func (u *userRegistration) hasValidPassword() bool {
+	return len(u.Password) >= 6 && len(u.Password) <= 128
+}
+
+func (u *userRegistration) hasValidEmail() bool {
+	return len(u.Email) <= 128
+}
+
 type verificationRequest struct {
 	Type              string `json:"type"`
 	Recipient         string `json:"recipient"`
