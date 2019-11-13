@@ -57,6 +57,12 @@ func (repo *userRepository) loginUser(email string, password string) error {
 		return err
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
+		return err
+	}
+	if !user.Verified {
+		err = errors.New("User not verified")
+	}
 	return err
 }
 

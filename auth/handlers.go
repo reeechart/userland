@@ -87,7 +87,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	err = userRepo.loginUser(loginUser.Email, loginUser.Password)
 
 	if err != nil {
-		response.RespondUnauthorized(w, LOGIN_PASSWORD_DOES_NOT_MATCH, err)
+		response.RespondUnauthorized(w, LOGIN_PASSWORD_NOT_MATCH_OR_UNVERIFIED, err)
 		return
 	}
 
