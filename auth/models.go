@@ -31,7 +31,7 @@ type userRegistration struct {
 	PasswordConfirm string `json:"password_confirm"`
 }
 
-func (u *userRegistration) hasValidData() bool {
+func (u *userRegistration) hasCompleteData() bool {
 	return u.Fullname != "" && u.Email != "" && u.Password != "" && u.PasswordConfirm != ""
 }
 

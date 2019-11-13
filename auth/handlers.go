@@ -19,7 +19,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !userRegistrationData.hasValidData() {
+	if !userRegistrationData.hasCompleteData() {
 		err = errors.New("Registration data incomplete")
 		response.RespondBadRequest(w, REGISTRATION_BODY_INCOMPLETE, err)
 		return
