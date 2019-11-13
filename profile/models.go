@@ -32,7 +32,8 @@ func (user UserProfile) hasValidBio() bool {
 }
 
 func (user UserProfile) hasValidWeb() bool {
-	return len(user.Web) <= 128
+	webFormatValid := regexp.MustCompile(`^((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$`).MatchString(user.Web)
+	return len(user.Web) <= 128 && webFormatValid
 }
 
 type ChangeEmailRequest struct {
