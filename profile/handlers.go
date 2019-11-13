@@ -62,6 +62,12 @@ func ChangeEmailAddress(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !emailReq.hasValidEmail() {
+		err = errors.New("Invalid email address")
+		response.RespondBadRequest(w, EMAIL_INVALID, err)
+		return
+	}
+
 	repo := getProfileRepository()
 	err = repo.changeUserEmail(user, emailReq.NewEmail)
 

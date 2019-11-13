@@ -1,6 +1,7 @@
 package profile
 
 import (
+	"regexp"
 	"time"
 )
 
@@ -16,6 +17,10 @@ type UserProfile struct {
 
 type ChangeEmailRequest struct {
 	NewEmail string `json:"email"`
+}
+
+func (req ChangeEmailRequest) hasValidEmail() bool {
+	return regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`).MatchString(req.NewEmail)
 }
 
 type ChangePasswordRequest struct {
