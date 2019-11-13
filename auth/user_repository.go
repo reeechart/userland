@@ -41,11 +41,13 @@ func (repo *userRepository) createNewUser(user userRegistration) error {
 	tx, err = repo.db.Beginx()
 	err = tx.Get(&newUserId, CREATE_USER_QUERY, user.Fullname, user.Email, string(passwordHash))
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
 
 	_, err = tx.Exec(UPDATE_VERIF_TOKEN_QUERY, generateToken(), newUserId)
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
 
@@ -105,11 +107,13 @@ func (repo *userRepository) resetPassword(token string, password string) error {
 	tx, err = repo.db.Beginx()
 	_, err = tx.Exec(UPDATE_PASSWORD_QUERY, passwordHash, user.Id)
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
 
 	_, err = tx.Exec(DELETE_RESET_PASS_TOKEN_QUERY, user.Id)
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
 
