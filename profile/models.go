@@ -15,6 +15,26 @@ type UserProfile struct {
 	CreatedAt      time.Time `json:"created_at" db:"created_at"`
 }
 
+func (user UserProfile) hasValidProfile() bool {
+	return user.hasValidFullname() && user.hasValidLocation() && user.hasValidBio() && user.hasValidWeb()
+}
+
+func (user UserProfile) hasValidFullname() bool {
+	return len(user.Fullname) >= 3 && len(user.Fullname) <= 128
+}
+
+func (user UserProfile) hasValidLocation() bool {
+	return len(user.Location) <= 128
+}
+
+func (user UserProfile) hasValidBio() bool {
+	return len(user.Bio) <= 255
+}
+
+func (user UserProfile) hasValidWeb() bool {
+	return len(user.Web) <= 128
+}
+
 type ChangeEmailRequest struct {
 	NewEmail string `json:"email"`
 }

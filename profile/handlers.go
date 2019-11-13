@@ -35,6 +35,12 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !userInfo.hasValidProfile() {
+		err = errors.New("Invalid user profile")
+		response.RespondBadRequest(w, USER_INFO_INVALID, err)
+		return
+	}
+
 	repo := getProfileRepository()
 	err = repo.updateUserProfile(user, userInfo)
 
