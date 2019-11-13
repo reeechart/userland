@@ -150,6 +150,12 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !req.hasValidPassword() {
+		err = errors.New("Password length invalid")
+		response.RespondBadRequest(w, RESET_PASSWORD_PASSWORD_INVALID, err)
+		return
+	}
+
 	if !req.hasMatchingPassword() {
 		err = errors.New("Passwords don't match")
 		response.RespondBadRequest(w, RESET_PASSWORD_PASSWORD_NOT_MATCH, err)

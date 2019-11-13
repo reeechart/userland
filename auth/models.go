@@ -74,3 +74,7 @@ type resetPasswordRequest struct {
 func (req resetPasswordRequest) hasMatchingPassword() bool {
 	return req.Password == req.PasswordConfirm
 }
+
+func (req resetPasswordRequest) hasValidPassword() bool {
+	return len(req.Password) >= 6 && len(req.Password) <= 128
+}
