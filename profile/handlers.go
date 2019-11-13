@@ -84,6 +84,12 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !passwordReq.hasValidPassword() {
+		err = errors.New("Password is invalid")
+		response.RespondBadRequest(w, CHANGE_PASSWORD_PASSWORD_INVALID, err)
+		return
+	}
+
 	if !passwordReq.hasMatchingNewPassword() {
 		err = errors.New("Passwords don't match")
 		response.RespondBadRequest(w, CHANGE_PASSWORD_PASSWORD_NOT_MATCH, err)

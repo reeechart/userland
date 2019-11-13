@@ -28,6 +28,10 @@ func (req ChangePasswordRequest) hasMatchingNewPassword() bool {
 	return req.Password == req.PasswordConfirm
 }
 
+func (req ChangePasswordRequest) hasValidPassword() bool {
+	return len(req.Password) >= 6 && len(req.Password) <= 128
+}
+
 type DeleteAccountRequest struct {
 	Password string `json:"password"`
 }
