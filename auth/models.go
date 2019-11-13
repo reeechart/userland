@@ -13,6 +13,7 @@ type User struct {
 	Location           sql.NullString `json:"location"`
 	Bio                sql.NullString `json:"bio"`
 	Web                sql.NullString `json:"web"`
+	Verified           bool           `json:"verified"`
 	ProfilePicture     []byte         `json:"picture" db:"picture"`
 	VerificationToken  sql.NullString `json:"verification_token" db:"verification_token"`
 	ResetPasswordToken sql.NullString `json:"reset_password_token" db:"reset_password_token"`
