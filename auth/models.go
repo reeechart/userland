@@ -40,12 +40,13 @@ func (u *userRegistration) hasMatchingPassword() bool {
 }
 
 type verificationRequest struct {
-	Type      string `json:"type"`
-	Recipient string `json:"recipient"`
+	Type              string `json:"type"`
+	Recipient         string `json:"recipient"`
+	VerificationToken string `json:"verification_token"`
 }
 
 func (req verificationRequest) isValid() bool {
-	return req.Type != "" && req.Recipient != ""
+	return req.Type != "" && req.Recipient != "" && req.VerificationToken != ""
 }
 
 type resetPasswordRequest struct {

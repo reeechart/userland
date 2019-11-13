@@ -58,7 +58,7 @@ func Verify(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userRepo := getUserRepository()
-	err = userRepo.verifyUser(verifReq.Recipient)
+	err = userRepo.verifyUser(verifReq.Recipient, verifReq.VerificationToken)
 
 	if err != nil {
 		response.RespondBadRequest(w, VERIFICATION_UNABLE_TO_EXEC_QUERY, err)

@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"errors"
 	"userland/appcontext"
 
 	"github.com/jmoiron/sqlx"
@@ -16,6 +17,7 @@ const (
 	UPDATE_PASSWORD_QUERY                 = "UPDATE \"user\" SET password=$1 WHERE id=$2"
 	SELECT_USER_BY_ID_QUERY               = "SELECT * FROM \"user\" WHERE id=$1"
 	DELETE_RESET_PASS_TOKEN_QUERY         = "UPDATE \"user\" SET reset_password_token=NULL WHERE id=$1"
+	UPDATE_VERIFIED_QUERY                 = "UPDATE \"user\" SET verification_token=NULL, verified=true WHERE id=$1"
 )
 
 type userRepository struct {
@@ -55,12 +57,17 @@ func (repo *userRepository) createNewUser(user userRegistration) error {
 	return err
 }
 
-func (repo *userRepository) verifyUser(recipient string) error {
+func (repo *userRepository) verifyUser(recipient string, token string) error {
 	user, err := repo.getUserByEmail(recipient)
 	if err != nil {
 		return err
 	}
-	_, err = repo.db.Queryx(UPDATE_VERIF_TOKEN_QUERY, generateToken(), user.Id)
+
+	if user.VerificationToken.String != token {
+		return errors.New("Tokens don't match")
+	}
+
+	_, err = repo.db.Queryx(UPDATE_VERIFIED_QUERY, user.Id)
 	return err
 }
 
