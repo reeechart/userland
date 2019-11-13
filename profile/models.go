@@ -20,7 +20,8 @@ type ChangeEmailRequest struct {
 }
 
 func (req ChangeEmailRequest) hasValidEmail() bool {
-	return regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`).MatchString(req.NewEmail)
+	emailFormatValid := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`).MatchString(req.NewEmail)
+	return len(req.NewEmail) <= 128 && emailFormatValid
 }
 
 type ChangePasswordRequest struct {
