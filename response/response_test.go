@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	SAMPLE_ERROR_CODE = 1000
+	SAMPLE_ERROR_CODE             = 1000
+	APPLICATION_JSON_CONTENT_TYPE = "application/json"
 )
 
 func TestRespondSuccess(t *testing.T) {
@@ -24,6 +25,7 @@ func TestRespondSuccess(t *testing.T) {
 	res := httptest.NewRecorder()
 	RespondSuccess(res)
 	assert.Equal(t, http.StatusOK, res.Code)
+	assert.Equal(t, APPLICATION_JSON_CONTENT_TYPE, res.Header().Get("Content-Type"))
 	assert.Equal(t, string(expectedBody), res.Body.String(), "Respond success should return success true JSON")
 }
 
@@ -38,6 +40,7 @@ func TestRespondSuccessWithBody(t *testing.T) {
 	res := httptest.NewRecorder()
 	RespondSuccessWithBody(res, sampleObject)
 	assert.Equal(t, http.StatusOK, res.Code)
+	assert.Equal(t, APPLICATION_JSON_CONTENT_TYPE, res.Header().Get("Content-Type"))
 	assert.Equal(t, string(expectedBody), res.Body.String())
 }
 
@@ -50,6 +53,7 @@ func TestRespondBadRequest(t *testing.T) {
 	res := httptest.NewRecorder()
 	RespondBadRequest(res, SAMPLE_ERROR_CODE, sampleErr)
 	assert.Equal(t, http.StatusBadRequest, res.Code)
+	assert.Equal(t, APPLICATION_JSON_CONTENT_TYPE, res.Header().Get("Content-Type"))
 	assert.Equal(t, string(expectedBody), res.Body.String())
 }
 
@@ -62,6 +66,7 @@ func TestRespondUnauthorized(t *testing.T) {
 	res := httptest.NewRecorder()
 	RespondUnauthorized(res, SAMPLE_ERROR_CODE, sampleErr)
 	assert.Equal(t, http.StatusUnauthorized, res.Code)
+	assert.Equal(t, APPLICATION_JSON_CONTENT_TYPE, res.Header().Get("Content-Type"))
 	assert.Equal(t, string(expectedBody), res.Body.String())
 }
 
@@ -74,5 +79,6 @@ func TestRespondInternalError(t *testing.T) {
 	res := httptest.NewRecorder()
 	RespondInternalError(res, SAMPLE_ERROR_CODE, sampleErr)
 	assert.Equal(t, http.StatusInternalServerError, res.Code)
+	assert.Equal(t, APPLICATION_JSON_CONTENT_TYPE, res.Header().Get("Content-Type"))
 	assert.Equal(t, string(expectedBody), res.Body.String())
 }
