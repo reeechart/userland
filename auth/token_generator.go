@@ -3,6 +3,7 @@ package auth
 import (
 	"math/rand"
 	"time"
+	"userland/config"
 
 	"github.com/dgrijalva/jwt-go"
 )
@@ -16,7 +17,6 @@ const (
 	TOKEN_LENGTH = 32
 
 	HOURS_IN_DAY = 24
-	JWT_KEY      = "userland_jwt_key"
 )
 
 type Claims struct {
@@ -41,7 +41,7 @@ func generateJWT(user User, expirationTime time.Time) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte(JWT_KEY))
+	tokenString, err := token.SignedString([]byte(config.GetJWTKey()))
 
 	return tokenString, err
 }

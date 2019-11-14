@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"net/http"
+	"userland/config"
 	"userland/response"
 
 	"github.com/dgrijalva/jwt-go"
@@ -25,7 +26,7 @@ func WithVerifyJWT(next http.HandlerFunc) http.HandlerFunc {
 		claims := &Claims{}
 
 		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-			return []byte(JWT_KEY), nil
+			return []byte(config.GetJWTKey()), nil
 		})
 
 		if err != nil {
