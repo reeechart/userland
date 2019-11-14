@@ -8,7 +8,8 @@ import (
 )
 
 var (
-	userProfile UserProfile
+	userProfile   UserProfile
+	changePassReq ChangePasswordRequest
 )
 
 const (
@@ -26,6 +27,14 @@ func resetUserProfileModel() {
 		Web:            "https://example.com",
 		ProfilePicture: nil,
 		CreatedAt:      time.Now(),
+	}
+}
+
+func resetChangePasswordRequestModel() {
+	changePassReq = ChangePasswordRequest{
+		PasswordCurrent: "password",
+		Password:        "password",
+		PasswordConfirm: "password",
 	}
 }
 
@@ -66,4 +75,12 @@ func TestChangeEmailRequestValidity(t *testing.T) {
 
 	emailReq.NewEmail = "user@examplecom"
 	assert.False(t, emailReq.hasValidEmail(), "Change email request is invalid when email domain is invalid")
+}
+
+func TestChangePasswordRequestHasMatchingPassword(t *testing.T) {
+	resetChangePasswordRequestModel()
+	assert.True(t, changePassReq.hasMatchingNewPassword(), "Change password request should be valid when Password==PasswordConfirm")
+
+	changePassReq.Password = "passwordchanged"
+	assert.False(t, changePassReq.hasMatchingNewPassword(), "Change password request should not be valid when Password!=PasswordConfirm")
 }
