@@ -14,6 +14,7 @@ var (
 
 const (
 	STR_LEN_LESS_THAN_3   = "na"
+	STR_LEN_LESS_THAN_6   = "aaaaa"
 	STR_LEN_MORE_THAN_128 = "NAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMEA"
 	INVALID_WEB           = "htt://example.co"
 )
@@ -83,4 +84,18 @@ func TestChangePasswordRequestHasMatchingPassword(t *testing.T) {
 
 	changePassReq.Password = "passwordchanged"
 	assert.False(t, changePassReq.hasMatchingNewPassword(), "Change password request should not be valid when Password!=PasswordConfirm")
+}
+
+func TestChangePasswordRequestHasValidPassword(t *testing.T) {
+	resetChangePasswordRequestModel()
+	assert.True(t, changePassReq.hasValidPassword(), "Change password request should be valid when password has valid length")
+
+	changePassReq.Password = STR_LEN_LESS_THAN_6
+	assert.False(t, changePassReq.hasValidPassword(), "Change password request should not be valid when password is shorter than 6")
+
+	resetChangePasswordRequestModel()
+	changePassReq.Password = STR_LEN_MORE_THAN_128
+	assert.False(t, changePassReq.hasValidPassword(), "Change password request should not be valid when password is longer than 128")
+
+	resetChangePasswordRequestModel()
 }
