@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -34,7 +35,7 @@ func TestDatabaseConfig(t *testing.T) {
 	testDbConfigInit()
 
 	dbConfig, err := getDatabaseConfig()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 	assert.Equal(t, dbConfigVars["DB_NAME"], dbConfig.dbname)
 	assert.Equal(t, dbConfigVars["DB_HOST"], dbConfig.host)
 	assert.Equal(t, dbConfigVars["DB_PORT"], dbConfig.port)
