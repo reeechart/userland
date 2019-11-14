@@ -35,16 +35,16 @@ func TestDatabaseConfig(t *testing.T) {
 
 	dbConfig, err := getDatabaseConfig()
 	assert.Nil(t, err)
-	assert.Equal(t, dbConfig.dbname, dbConfigVars["DB_NAME"])
-	assert.Equal(t, dbConfig.host, dbConfigVars["DB_HOST"])
-	assert.Equal(t, dbConfig.port, dbConfigVars["DB_PORT"])
-	assert.Equal(t, dbConfig.ssl, dbConfigVars["ENABLE_SSL"])
+	assert.Equal(t, dbConfigVars["DB_NAME"], dbConfig.dbname)
+	assert.Equal(t, dbConfigVars["DB_HOST"], dbConfig.host)
+	assert.Equal(t, dbConfigVars["DB_PORT"], dbConfig.port)
+	assert.Equal(t, dbConfigVars["ENABLE_SSL"], dbConfig.ssl)
 
 	testDbConfigEnd()
 }
 
 func TestDatabaseConnString(t *testing.T) {
 	testDbConfigInit()
-	assert.Equal(t, GetDatabaseConnectionString(), "dbname=userland host=localhost port=5432 sslmode=disable")
+	assert.Equal(t, "dbname=userland host=localhost port=5432 sslmode=disable", GetDatabaseConnectionString())
 	testDbConfigEnd()
 }
