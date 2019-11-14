@@ -11,6 +11,7 @@ import (
 var (
 	user             User
 	registrationData userRegistration
+	verifRequest     verificationRequest
 )
 
 const (
@@ -42,6 +43,14 @@ func resetRegistrationDataModel() {
 		Email:           "user@example.com",
 		Password:        "password",
 		PasswordConfirm: "password",
+	}
+}
+
+func resetVerificationRequestModel() {
+	verifRequest = verificationRequest{
+		Type:              "email.verify",
+		Recipient:         "user@example.com",
+		VerificationToken: "newtokennewtokennewtokennewtoken",
 	}
 }
 
@@ -114,4 +123,22 @@ func TestUserRegistrationValidity(t *testing.T) {
 	assert.False(t, registrationData.hasValidData(), "Registration data should not be valid when password is longer than 128")
 
 	resetRegistrationDataModel()
+}
+
+func TestUserVerificationRequestValidity(t *testing.T) {
+	resetVerificationRequestModel()
+	assert.True(t, verifRequest.isValid(), "Verification request is valid when data is complete")
+
+	verifRequest.Type = ""
+	assert.False(t, verifRequest.isValid(), "Verification request should not be valid when verification type is empty")
+
+	resetVerificationRequestModel()
+	verifRequest.Recipient = ""
+	assert.False(t, verifRequest.isValid(), "Verification request should not be valid when recipient is empty")
+
+	resetVerificationRequestModel()
+	verifRequest.VerificationToken = ""
+	assert.False(t, verifRequest.isValid(), "Verification request should not be valid when verification token is empty")
+
+	resetVerificationRequestModel()
 }
