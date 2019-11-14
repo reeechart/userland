@@ -64,3 +64,15 @@ func TestRespondUnauthorized(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, res.Code)
 	assert.Equal(t, string(expectedBody), res.Body.String())
 }
+
+func TestRespondInternalError(t *testing.T) {
+	sampleErr := errors.New("sample internal server error")
+	errorResponse := ErrorResponse{Code: SAMPLE_ERROR_CODE, Message: sampleErr.Error()}
+	expectedBody, err := json.Marshal(errorResponse)
+	require.Nil(t, err)
+
+	res := httptest.NewRecorder()
+	RespondInternalError(res, SAMPLE_ERROR_CODE, sampleErr)
+	assert.Equal(t, http.StatusInternalServerError, res.Code)
+	assert.Equal(t, string(expectedBody), res.Body.String())
+}
