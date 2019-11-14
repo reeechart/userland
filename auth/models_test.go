@@ -165,3 +165,13 @@ func TestResetPasswordRequestHasValidPassword(t *testing.T) {
 
 	resetResetPasswordRequestModel()
 }
+
+func TestResetPasswordRequestHasMatchingPassword(t *testing.T) {
+	resetResetPasswordRequestModel()
+	assert.True(t, resetPassRequest.hasMatchingPassword(), "Reset password request should have matching password when Password==PasswordConfirm")
+
+	resetPassRequest.Password = "passwordchanged"
+	assert.False(t, resetPassRequest.hasMatchingPassword(), "Reset password request should not have matching password when Password!=PasswordConfirm")
+
+	resetResetPasswordRequestModel()
+}
