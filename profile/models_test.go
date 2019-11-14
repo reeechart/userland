@@ -54,3 +54,16 @@ func TestUserProfileValidity(t *testing.T) {
 
 	resetUserProfileModel()
 }
+
+func TestChangeEmailRequestValidity(t *testing.T) {
+	emailReq := ChangeEmailRequest{
+		NewEmail: "user@example.com",
+	}
+	assert.True(t, emailReq.hasValidEmail(), "Change email request is valid when email is valid")
+
+	emailReq.NewEmail = "userexample.com"
+	assert.False(t, emailReq.hasValidEmail(), "Change email request is invalid when email local is invalid")
+
+	emailReq.NewEmail = "user@examplecom"
+	assert.False(t, emailReq.hasValidEmail(), "Change email request is invalid when email domain is invalid")
+}
