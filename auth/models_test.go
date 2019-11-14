@@ -77,3 +77,13 @@ func TestUserRegistrationHasCompleteData(t *testing.T) {
 
 	resetRegistrationDataModel()
 }
+
+func TestUserRegistrationHasMatchingPassword(t *testing.T) {
+	resetRegistrationDataModel()
+	assert.True(t, registrationData.hasMatchingPassword(), "Registration data should have matching password when Password==PasswordConfirm")
+
+	registrationData.Password = "passwordchanged"
+	assert.False(t, registrationData.hasMatchingPassword(), "Registration data should not have matching password when Password!=PasswordConfirm")
+
+	resetRegistrationDataModel()
+}
