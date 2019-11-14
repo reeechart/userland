@@ -9,10 +9,11 @@ import (
 )
 
 var (
-	user User
+	user             User
+	registrationData userRegistration
 )
 
-func testAuthModelReset() {
+func resetUserModel() {
 	user = User{
 		Id:                 1,
 		Fullname:           "user",
@@ -29,19 +30,50 @@ func testAuthModelReset() {
 	}
 }
 
+func resetRegistrationDataModel() {
+	registrationData = userRegistration{
+		Fullname:        "user",
+		Email:           "user@example.com",
+		Password:        "password",
+		PasswordConfirm: "password",
+	}
+}
+
 func TestUserAbleToLogin(t *testing.T) {
-	testAuthModelReset()
+	resetUserModel()
 	assert.True(t, user.ableToLogin(), "User should be able to login when email and password are provided")
 
 	user.Email = ""
 	assert.False(t, user.ableToLogin(), "User should be unable to login when email is empty")
 
-	testAuthModelReset()
+	resetUserModel()
 	user.Password = ""
 	assert.False(t, user.ableToLogin(), "User should be unable to login when password is empty")
 
 	user.Email = ""
 	assert.False(t, user.ableToLogin(), "User should be unable to login when email and password are empty")
 
-	testAuthModelReset()
+	resetUserModel()
+}
+
+func TestUserRegistrationHasCompleteData(t *testing.T) {
+	resetRegistrationDataModel()
+	assert.True(t, registrationData.hasCompleteData(), "Registration data is complete when all attributes has value")
+
+	registrationData.Fullname = ""
+	assert.False(t, registrationData.hasCompleteData(), "Registration data should not be complete when fullname is empty")
+
+	resetRegistrationDataModel()
+	registrationData.Email = ""
+	assert.False(t, registrationData.hasCompleteData(), "Registration data should not be complete when email is empty")
+
+	resetRegistrationDataModel()
+	registrationData.Password = ""
+	assert.False(t, registrationData.hasCompleteData(), "Registration data should not be complete when password is empty")
+
+	resetRegistrationDataModel()
+	registrationData.PasswordConfirm = ""
+	assert.False(t, registrationData.hasCompleteData(), "Registration data should not be complete when password confirm is empty")
+
+	resetRegistrationDataModel()
 }
