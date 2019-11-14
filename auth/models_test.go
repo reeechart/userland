@@ -13,6 +13,12 @@ var (
 	registrationData userRegistration
 )
 
+const (
+	STR_LEN_LESS_THAN_6   = "aaaaa"
+	STR_LEN_MORE_THAN_128 = "NAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMENAMEA"
+	INVALID_EMAIL_SAMPLE  = "example@example/com"
+)
+
 func resetUserModel() {
 	user = User{
 		Id:                 1,
@@ -84,6 +90,28 @@ func TestUserRegistrationHasMatchingPassword(t *testing.T) {
 
 	registrationData.Password = "passwordchanged"
 	assert.False(t, registrationData.hasMatchingPassword(), "Registration data should not have matching password when Password!=PasswordConfirm")
+
+	resetRegistrationDataModel()
+}
+
+func TestUserRegistrationValidity(t *testing.T) {
+	resetRegistrationDataModel()
+	assert.True(t, registrationData.hasValidData(), "Registration data should have valid fullname, email, and password")
+
+	registrationData.Fullname = STR_LEN_MORE_THAN_128
+	assert.False(t, registrationData.hasValidData(), "Registration data should not be valid when fullname is longer than 128")
+
+	resetRegistrationDataModel()
+	registrationData.Email = STR_LEN_MORE_THAN_128
+	assert.False(t, registrationData.hasValidData(), "Registration data should not be valid when email length is longer than 128")
+	registrationData.Email = INVALID_EMAIL_SAMPLE
+	assert.False(t, registrationData.hasValidData(), "Registration data should not be valid when email does not match regex")
+
+	resetRegistrationDataModel()
+	registrationData.Password = STR_LEN_LESS_THAN_6
+	assert.False(t, registrationData.hasValidData(), "Registration data should not be valid when password is shorter than 6")
+	registrationData.PasswordConfirm = STR_LEN_MORE_THAN_128
+	assert.False(t, registrationData.hasValidData(), "Registration data should not be valid when password is longer than 128")
 
 	resetRegistrationDataModel()
 }
