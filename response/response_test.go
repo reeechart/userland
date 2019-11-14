@@ -52,3 +52,15 @@ func TestRespondBadRequest(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, res.Code)
 	assert.Equal(t, string(expectedBody), res.Body.String())
 }
+
+func TestRespondUnauthorized(t *testing.T) {
+	sampleErr := errors.New("sample unauthorized")
+	errorResponse := ErrorResponse{Code: SAMPLE_ERROR_CODE, Message: sampleErr.Error()}
+	expectedBody, err := json.Marshal(errorResponse)
+	require.Nil(t, err)
+
+	res := httptest.NewRecorder()
+	RespondUnauthorized(res, SAMPLE_ERROR_CODE, sampleErr)
+	assert.Equal(t, http.StatusUnauthorized, res.Code)
+	assert.Equal(t, string(expectedBody), res.Body.String())
+}
