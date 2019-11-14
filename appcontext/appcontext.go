@@ -4,6 +4,7 @@ import (
 	"userland/config"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
@@ -20,6 +21,8 @@ func check(err error) {
 }
 
 func InitContext() {
+	err := godotenv.Load()
+	check(err)
 	db, err := sqlx.Connect("postgres", config.GetDatabaseConnectionString())
 	check(err)
 	context = &appContext{db}

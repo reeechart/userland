@@ -2,8 +2,6 @@ package config
 
 import (
 	"os"
-
-	"github.com/joho/godotenv"
 )
 
 const (
@@ -11,9 +9,5 @@ const (
 )
 
 func GetJWTKey() string {
-	err := godotenv.Load()
-	if err != nil {
-		panic(err)
-	}
 	return os.Getenv("JWT_KEY")
 }

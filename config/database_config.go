@@ -3,8 +3,6 @@ package config
 import (
 	"fmt"
 	"os"
-
-	"github.com/joho/godotenv"
 )
 
 type databaseConfig struct {
@@ -30,10 +28,6 @@ func GetDatabaseConnectionString() string {
 }
 
 func getDatabaseConfig() (*databaseConfig, error) {
-	err := godotenv.Load()
-	if err != nil {
-		return nil, err
-	}
 	return &databaseConfig{
 		dbname: os.Getenv("DB_NAME"),
 		host:   os.Getenv("DB_HOST"),
