@@ -12,6 +12,7 @@ var (
 	user             User
 	registrationData userRegistration
 	verifRequest     verificationRequest
+	resetPassRequest resetPasswordRequest
 )
 
 const (
@@ -51,6 +52,14 @@ func resetVerificationRequestModel() {
 		Type:              "email.verify",
 		Recipient:         "user@example.com",
 		VerificationToken: "newtokennewtokennewtokennewtoken",
+	}
+}
+
+func resetResetPasswordRequestModel() {
+	resetPassRequest = resetPasswordRequest{
+		Token:           "newtokennewtokennewtokennewtoken",
+		Password:        "password",
+		PasswordConfirm: "password",
 	}
 }
 
@@ -141,4 +150,18 @@ func TestUserVerificationRequestValidity(t *testing.T) {
 	assert.False(t, verifRequest.isValid(), "Verification request should not be valid when verification token is empty")
 
 	resetVerificationRequestModel()
+}
+
+func TestResetPasswordRequestHasValidPassword(t *testing.T) {
+	resetResetPasswordRequestModel()
+	assert.True(t, resetPassRequest.hasValidPassword(), "Reset password request should be valid when password length is between 6-128")
+
+	resetPassRequest.Password = STR_LEN_LESS_THAN_6
+	assert.False(t, resetPassRequest.hasValidPassword(), "Reset password request should not be valid when password is shorter than 6")
+
+	resetResetPasswordRequestModel()
+	resetPassRequest.Password = STR_LEN_MORE_THAN_128
+	assert.False(t, resetPassRequest.hasValidPassword(), "Reset password request should not be valid when password is longer than 128")
+
+	resetResetPasswordRequestModel()
 }
