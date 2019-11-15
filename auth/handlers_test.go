@@ -15,9 +15,6 @@ import (
 )
 
 var (
-	res                  *httptest.ResponseRecorder
-	userRegistrationData []byte
-
 	handler AuthHandler
 	router  *mux.Router
 
@@ -89,45 +86,21 @@ func TestRegister(t *testing.T) {
 	testAuthHandlerInit(t)
 	initRepoForRegistration()
 
-	userRegistrationData, err = json.Marshal(validNewUser)
+	testRegisterUser(t, validNewUser, http.StatusOK)
+	testRegisterUser(t, invalidNewUser, http.StatusBadRequest)
+	testRegisterUser(t, incompleteNewUser, http.StatusBadRequest)
+	testRegisterUser(t, unmatchingPassNewUser, http.StatusBadRequest)
+	testRegisterUser(t, validNewUserFailQuery, http.StatusBadRequest)
+
+	testAuthHandlerEnd()
+}
+
+func testRegisterUser(t *testing.T, newUser userRegistration, expectedStatusCode int) {
+	userRegistrationData, err := json.Marshal(newUser)
 	require.Nil(t, err)
 	req, err := http.NewRequest(http.MethodPost, "/auth/register", bytes.NewReader(userRegistrationData))
 	require.Nil(t, err)
-	res = httptest.NewRecorder()
+	res := httptest.NewRecorder()
 	router.ServeHTTP(res, req)
-	assert.Equal(t, http.StatusOK, res.Code)
-
-	userRegistrationData, err = json.Marshal(invalidNewUser)
-	require.Nil(t, err)
-	req, err = http.NewRequest(http.MethodPost, "/auth/register", bytes.NewReader(userRegistrationData))
-	require.Nil(t, err)
-	res = httptest.NewRecorder()
-	router.ServeHTTP(res, req)
-	assert.Equal(t, http.StatusBadRequest, res.Code)
-
-	userRegistrationData, err = json.Marshal(incompleteNewUser)
-	require.Nil(t, err)
-	req, err = http.NewRequest(http.MethodPost, "/auth/register", bytes.NewReader(userRegistrationData))
-	require.Nil(t, err)
-	res = httptest.NewRecorder()
-	router.ServeHTTP(res, req)
-	assert.Equal(t, http.StatusBadRequest, res.Code)
-
-	userRegistrationData, err = json.Marshal(unmatchingPassNewUser)
-	require.Nil(t, err)
-	req, err = http.NewRequest(http.MethodPost, "/auth/register", bytes.NewReader(userRegistrationData))
-	require.Nil(t, err)
-	res = httptest.NewRecorder()
-	router.ServeHTTP(res, req)
-	assert.Equal(t, http.StatusBadRequest, res.Code)
-
-	userRegistrationData, err = json.Marshal(validNewUserFailQuery)
-	require.Nil(t, err)
-	req, err = http.NewRequest(http.MethodPost, "/auth/register", bytes.NewReader(userRegistrationData))
-	require.Nil(t, err)
-	res = httptest.NewRecorder()
-	router.ServeHTTP(res, req)
-	assert.Equal(t, http.StatusBadRequest, res.Code)
-
-	testAuthHandlerEnd()
+	assert.Equal(t, expectedStatusCode, res.Code)
 }
