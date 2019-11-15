@@ -10,7 +10,11 @@ import (
 
 var err error
 
-func Register(w http.ResponseWriter, r *http.Request) {
+type AuthHandler struct {
+	UserRepo userRepositoryInterface
+}
+
+func (handler AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var userRegistrationData userRegistration
 	err = json.NewDecoder(r.Body).Decode(&userRegistrationData)
 
@@ -37,8 +41,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userRepo := getUserRepository()
-	err = userRepo.createNewUser(userRegistrationData)
+	err = handler.UserRepo.createNewUser(userRegistrationData)
 
 	if err != nil {
 		response.RespondBadRequest(w, REGISTRATION_UNABLE_TO_EXEC_QUERY, err)
@@ -48,7 +51,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	response.RespondSuccess(w)
 }
 
-func Verify(w http.ResponseWriter, r *http.Request) {
+func (handler AuthHandler) Verify(w http.ResponseWriter, r *http.Request) {
 	var verifReq verificationRequest
 	err = json.NewDecoder(r.Body).Decode(&verifReq)
 
@@ -63,8 +66,7 @@ func Verify(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userRepo := getUserRepository()
-	err = userRepo.verifyUser(verifReq.Recipient, verifReq.VerificationToken)
+	err = handler.UserRepo.verifyUser(verifReq.Recipient, verifReq.VerificationToken)
 
 	if err != nil {
 		response.RespondBadRequest(w, VERIFICATION_UNABLE_TO_EXEC_QUERY, err)
@@ -74,7 +76,7 @@ func Verify(w http.ResponseWriter, r *http.Request) {
 	response.RespondSuccess(w)
 }
 
-func Login(w http.ResponseWriter, r *http.Request) {
+func (handler AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var loginUser User
 	err = json.NewDecoder(r.Body).Decode(&loginUser)
 
@@ -89,15 +91,14 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userRepo := getUserRepository()
-	err = userRepo.loginUser(loginUser.Email, loginUser.Password)
+	err = handler.UserRepo.loginUser(loginUser.Email, loginUser.Password)
 
 	if err != nil {
 		response.RespondUnauthorized(w, LOGIN_PASSWORD_NOT_MATCH_OR_UNVERIFIED, err)
 		return
 	}
 
-	user, _ := userRepo.getUserByEmail(loginUser.Email)
+	user, _ := handler.UserRepo.getUserByEmail(loginUser.Email)
 	expirationTime := time.Now().Add(HOURS_IN_DAY * time.Hour)
 	token, err := generateJWT(*user, expirationTime)
 	if err != nil {
@@ -114,7 +115,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	response.RespondSuccessWithBody(w, map[string]bool{"require_tfa": false})
 }
 
-func ForgetPassword(w http.ResponseWriter, r *http.Request) {
+func (handler AuthHandler) ForgetPassword(w http.ResponseWriter, r *http.Request) {
 	var user User
 	err = json.NewDecoder(r.Body).Decode(&user)
 
@@ -129,8 +130,7 @@ func ForgetPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userRepo := getUserRepository()
-	err = userRepo.forgetPassword(user.Email)
+	err = handler.UserRepo.forgetPassword(user.Email)
 
 	if err != nil {
 		err = errors.New("Error on executing query")
@@ -141,7 +141,7 @@ func ForgetPassword(w http.ResponseWriter, r *http.Request) {
 	response.RespondSuccess(w)
 }
 
-func ResetPassword(w http.ResponseWriter, r *http.Request) {
+func (handler AuthHandler) ResetPassword(w http.ResponseWriter, r *http.Request) {
 	var req resetPasswordRequest
 	err = json.NewDecoder(r.Body).Decode(&req)
 
@@ -162,8 +162,7 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userRepo := getUserRepository()
-	err = userRepo.resetPassword(req.Token, req.Password)
+	err = handler.UserRepo.resetPassword(req.Token, req.Password)
 
 	if err != nil {
 		response.RespondBadRequest(w, RESET_PASSWORD_UNABLE_TO_EXEC_QUERY, err)

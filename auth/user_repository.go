@@ -34,7 +34,7 @@ type userRepository struct {
 	db *sqlx.DB
 }
 
-func getUserRepository() *userRepository {
+func GetUserRepository() *userRepository {
 	repo := userRepository{appcontext.GetDB()}
 	return &repo
 }

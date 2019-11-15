@@ -9,21 +9,30 @@ import (
 	"github.com/gorilla/mux"
 )
 
+var (
+	authHandler auth.AuthHandler
+)
+
 func GetRouter() *mux.Router {
 	router := mux.NewRouter()
 
+	initHandler()
 	setupRouteHandler(router)
 
 	return router
 }
 
+func initHandler() {
+	authHandler = auth.AuthHandler{UserRepo: auth.GetUserRepository()}
+}
+
 func setupRouteHandler(router *mux.Router) {
 	router.HandleFunc("/api/ping", ping.Ping).Methods(http.MethodGet)
-	router.HandleFunc("/api/auth/register", auth.Register).Methods(http.MethodPost)
-	router.HandleFunc("/api/auth/verification", auth.Verify).Methods(http.MethodPost)
-	router.HandleFunc("/api/auth/login", auth.Login).Methods(http.MethodPost)
-	router.HandleFunc("/api/auth/password/forgot", auth.ForgetPassword).Methods(http.MethodPost)
-	router.HandleFunc("/api/auth/password/reset", auth.ResetPassword).Methods(http.MethodPost)
+	router.HandleFunc("/api/auth/register", authHandler.Register).Methods(http.MethodPost)
+	router.HandleFunc("/api/auth/verification", authHandler.Verify).Methods(http.MethodPost)
+	router.HandleFunc("/api/auth/login", authHandler.Login).Methods(http.MethodPost)
+	router.HandleFunc("/api/auth/password/forgot", authHandler.ForgetPassword).Methods(http.MethodPost)
+	router.HandleFunc("/api/auth/password/reset", authHandler.ResetPassword).Methods(http.MethodPost)
 
 	router.HandleFunc("/api/me", auth.WithVerifyJWT(profile.GetProfile)).Methods(http.MethodGet)
 	router.HandleFunc("/api/me", auth.WithVerifyJWT(profile.UpdateProfile)).Methods(http.MethodPut)
