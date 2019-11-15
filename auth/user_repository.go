@@ -19,6 +19,17 @@ const (
 	UPDATE_VERIFIED_QUERY                 = "UPDATE \"user\" SET verification_token=NULL, verified=true WHERE id=$1"
 )
 
+type userRepositoryInterface interface {
+	createNewUser(user userRegistration) error
+	verifyUser(recipient string, token string) error
+	loginUser(email string, password string) error
+	forgetPassword(email string) error
+	getUserByEmail(email string) (*User, error)
+	resetPassword(token string, password string) error
+	getUserByResetPasswordToken(token string) (*User, error)
+	getUserById(id int) (*User, error)
+}
+
 type userRepository struct {
 	db *sqlx.DB
 }
