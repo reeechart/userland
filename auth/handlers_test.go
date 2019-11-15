@@ -14,7 +14,8 @@ import (
 )
 
 var (
-	res *httptest.ResponseRecorder
+	res                  *httptest.ResponseRecorder
+	userRegistrationData []byte
 
 	handler AuthHandler
 	router  *mux.Router
@@ -77,24 +78,31 @@ func initRepoForRegistration() {
 		PasswordConfirm: "password",
 	}
 
-	mockRepo.EXPECT().createNewUser(validNewUser).Return(nil)
-	// mockRepo.EXPECT().createNewUser(invalidNewUser).Return(errors.New(""))
-	// mockRepo.EXPECT().createNewUser(incompleteNewUser).Return(errors.New(""))
-	// mockRepo.EXPECT().createNewUser(unmatchingPassNewUser).Return(errors.New(""))
-	// mockRepo.EXPECT().createNewUser(validNewUserFailQuery).Return(errors.New(""))
+	gomock.InOrder(
+		mockRepo.EXPECT().createNewUser(validNewUser).Return(nil),
+		// mockRepo.EXPECT().createNewUser(validNewUserFailQuery).Return(errors.New("")),
+	)
 }
 
 func TestRegister(t *testing.T) {
 	testAuthHandlerInit(t)
 	initRepoForRegistration()
 
-	userRegistrationData, err := json.Marshal(validNewUser)
+	userRegistrationData, err = json.Marshal(validNewUser)
 	require.Nil(t, err)
 	req, err := http.NewRequest(http.MethodPost, "/auth/register", bytes.NewReader(userRegistrationData))
 	require.Nil(t, err)
 	res = httptest.NewRecorder()
 	router.ServeHTTP(res, req)
 	assert.Equal(t, http.StatusOK, res.Code)
+
+	userRegistrationData, err = json.Marshal(invalidNewUser)
+	require.Nil(t, err)
+	req, err = http.NewRequest(http.MethodPost, "/auth/register", bytes.NewReader(userRegistrationData))
+	require.Nil(t, err)
+	res = httptest.NewRecorder()
+	router.ServeHTTP(res, req)
+	assert.Equal(t, http.StatusBadRequest, res.Code)
 
 	testAuthHandlerEnd()
 }
