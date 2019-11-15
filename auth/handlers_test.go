@@ -26,6 +26,9 @@ var (
 	incompleteNewUser     userRegistration
 	unmatchingPassNewUser userRegistration
 	validNewUserFailQuery userRegistration
+
+	loginnableUser   User
+	unloginnableUser User
 )
 
 func testAuthHandlerInit(t *testing.T) {
@@ -36,6 +39,7 @@ func testAuthHandlerInit(t *testing.T) {
 
 	router = mux.NewRouter()
 	router.HandleFunc("/auth/register", handler.Register).Methods(http.MethodPost)
+	router.HandleFunc("/auth/login", handler.Login).Methods(http.MethodPost)
 }
 
 func testAuthHandlerEnd() {
@@ -99,6 +103,42 @@ func testRegisterUser(t *testing.T, newUser userRegistration, expectedStatusCode
 	userRegistrationData, err := json.Marshal(newUser)
 	require.Nil(t, err)
 	req, err := http.NewRequest(http.MethodPost, "/auth/register", bytes.NewReader(userRegistrationData))
+	require.Nil(t, err)
+	res := httptest.NewRecorder()
+	router.ServeHTTP(res, req)
+	assert.Equal(t, expectedStatusCode, res.Code)
+}
+
+func TestLogin(t *testing.T) {
+	testAuthHandlerInit(t)
+	initRepoForLogin()
+
+	testLoginUser(t, loginnableUser, http.StatusOK)
+	testLoginUser(t, unloginnableUser, http.StatusBadRequest)
+
+	testAuthHandlerEnd()
+}
+
+func initRepoForLogin() {
+	loginnableUser = User{
+		Email:    "user@example.com",
+		Password: "password",
+	}
+
+	unloginnableUser = User{
+		Email: "user@example.com",
+	}
+
+	gomock.InOrder(
+		mockRepo.EXPECT().loginUser(loginnableUser.Email, loginnableUser.Password).Return(nil),
+		mockRepo.EXPECT().getUserByEmail(loginnableUser.Email).Return(&loginnableUser, nil),
+	)
+}
+
+func testLoginUser(t *testing.T, loginUser User, expectedStatusCode int) {
+	userData, err := json.Marshal(loginUser)
+	require.Nil(t, err)
+	req, err := http.NewRequest(http.MethodPost, "/auth/login", bytes.NewReader(userData))
 	require.Nil(t, err)
 	res := httptest.NewRecorder()
 	router.ServeHTTP(res, req)
