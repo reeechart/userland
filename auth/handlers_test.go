@@ -104,5 +104,13 @@ func TestRegister(t *testing.T) {
 	router.ServeHTTP(res, req)
 	assert.Equal(t, http.StatusBadRequest, res.Code)
 
+	userRegistrationData, err = json.Marshal(incompleteNewUser)
+	require.Nil(t, err)
+	req, err = http.NewRequest(http.MethodPost, "/auth/register", bytes.NewReader(userRegistrationData))
+	require.Nil(t, err)
+	res = httptest.NewRecorder()
+	router.ServeHTTP(res, req)
+	assert.Equal(t, http.StatusBadRequest, res.Code)
+
 	testAuthHandlerEnd()
 }
