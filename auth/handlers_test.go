@@ -42,6 +42,19 @@ func testAuthHandlerEnd() {
 	ctrl.Finish()
 }
 
+func TestRegister(t *testing.T) {
+	testAuthHandlerInit(t)
+	initRepoForRegistration()
+
+	testRegisterUser(t, validNewUser, http.StatusOK)
+	testRegisterUser(t, invalidNewUser, http.StatusBadRequest)
+	testRegisterUser(t, incompleteNewUser, http.StatusBadRequest)
+	testRegisterUser(t, unmatchingPassNewUser, http.StatusBadRequest)
+	testRegisterUser(t, validNewUserFailQuery, http.StatusBadRequest)
+
+	testAuthHandlerEnd()
+}
+
 func initRepoForRegistration() {
 	validNewUser = userRegistration{
 		Fullname:        "user",
@@ -80,19 +93,6 @@ func initRepoForRegistration() {
 		mockRepo.EXPECT().createNewUser(validNewUser).Return(nil),
 		mockRepo.EXPECT().createNewUser(validNewUserFailQuery).Return(errors.New("")),
 	)
-}
-
-func TestRegister(t *testing.T) {
-	testAuthHandlerInit(t)
-	initRepoForRegistration()
-
-	testRegisterUser(t, validNewUser, http.StatusOK)
-	testRegisterUser(t, invalidNewUser, http.StatusBadRequest)
-	testRegisterUser(t, incompleteNewUser, http.StatusBadRequest)
-	testRegisterUser(t, unmatchingPassNewUser, http.StatusBadRequest)
-	testRegisterUser(t, validNewUserFailQuery, http.StatusBadRequest)
-
-	testAuthHandlerEnd()
 }
 
 func testRegisterUser(t *testing.T, newUser userRegistration, expectedStatusCode int) {
