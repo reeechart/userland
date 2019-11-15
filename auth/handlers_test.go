@@ -3,6 +3,7 @@ package auth
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -80,7 +81,7 @@ func initRepoForRegistration() {
 
 	gomock.InOrder(
 		mockRepo.EXPECT().createNewUser(validNewUser).Return(nil),
-		// mockRepo.EXPECT().createNewUser(validNewUserFailQuery).Return(errors.New("")),
+		mockRepo.EXPECT().createNewUser(validNewUserFailQuery).Return(errors.New("")),
 	)
 }
 
@@ -113,6 +114,14 @@ func TestRegister(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, res.Code)
 
 	userRegistrationData, err = json.Marshal(unmatchingPassNewUser)
+	require.Nil(t, err)
+	req, err = http.NewRequest(http.MethodPost, "/auth/register", bytes.NewReader(userRegistrationData))
+	require.Nil(t, err)
+	res = httptest.NewRecorder()
+	router.ServeHTTP(res, req)
+	assert.Equal(t, http.StatusBadRequest, res.Code)
+
+	userRegistrationData, err = json.Marshal(validNewUserFailQuery)
 	require.Nil(t, err)
 	req, err = http.NewRequest(http.MethodPost, "/auth/register", bytes.NewReader(userRegistrationData))
 	require.Nil(t, err)
