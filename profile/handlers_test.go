@@ -51,6 +51,7 @@ func testProfileHandlerInit(t *testing.T) {
 	router = mux.NewRouter()
 	router.HandleFunc("/api/me", handler.GetProfile).Methods(http.MethodGet)
 	router.HandleFunc("/api/me", handler.UpdateProfile).Methods(http.MethodPut)
+	router.HandleFunc("/api/me/email", handler.GetEmail).Methods(http.MethodGet)
 }
 
 func testProfileHandlerEnd() {
@@ -135,6 +136,25 @@ func testUpdateUserProfile(t *testing.T, user *auth.User, profileUpdate UserProf
 	profileUpdateData, err := json.Marshal(profileUpdate)
 	require.Nil(t, err)
 	req, err := http.NewRequest(http.MethodPut, "/api/me", bytes.NewReader(profileUpdateData))
+	req = setRequestUserContext(req, user)
+	require.Nil(t, err)
+	res := httptest.NewRecorder()
+	router.ServeHTTP(res, req)
+	assert.Equal(t, expectedStatusCode, res.Code)
+}
+
+func TestGetEmail(t *testing.T) {
+	testProfileHandlerInit(t)
+
+	testGetUserEmail(t, &authenticatedUser, http.StatusOK)
+
+	testProfileHandlerEnd()
+}
+
+func testGetUserEmail(t *testing.T, user *auth.User, expectedStatusCode int) {
+	_, err := json.Marshal(user)
+	require.Nil(t, err)
+	req, err := http.NewRequest(http.MethodGet, "/api/me/email", nil)
 	req = setRequestUserContext(req, user)
 	require.Nil(t, err)
 	res := httptest.NewRecorder()
