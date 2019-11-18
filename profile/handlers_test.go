@@ -156,4 +156,5 @@ func testGetUserEmail(t *testing.T, user *auth.User, expectedStatusCode int) {
 	res := httptest.NewRecorder()
 	router.ServeHTTP(res, req)
 	assert.Equal(t, expectedStatusCode, res.Code)
+	assert.Equal(t, "{\"email\":\""+user.Email+"\"}", res.Body.String())
 }
