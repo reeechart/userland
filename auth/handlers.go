@@ -150,6 +150,12 @@ func (handler AuthHandler) ResetPassword(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	if !req.isValid() {
+		err = errors.New("Invalid reset password request")
+		response.RespondBadRequest(w, RESET_PASSWORD_BODY_INVALID, err)
+		return
+	}
+
 	if !req.hasValidPassword() {
 		err = errors.New("Password length invalid")
 		response.RespondBadRequest(w, RESET_PASSWORD_PASSWORD_INVALID, err)

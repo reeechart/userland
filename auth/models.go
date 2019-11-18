@@ -73,6 +73,10 @@ type resetPasswordRequest struct {
 	PasswordConfirm string `json:"password_confirm"`
 }
 
+func (req resetPasswordRequest) isValid() bool {
+	return req.Token != "" && req.Password != ""
+}
+
 func (req resetPasswordRequest) hasMatchingPassword() bool {
 	return req.Password == req.PasswordConfirm
 }
