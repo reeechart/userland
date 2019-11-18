@@ -37,6 +37,11 @@ var (
 
 	userWithEmail    User
 	userWithoutEmail User
+
+	validResetPassReq          resetPasswordRequest
+	invalidResetPassReq        resetPasswordRequest
+	invalidPassResetPassReq    resetPasswordRequest
+	unmatchingPassResetPassReq resetPasswordRequest
 )
 
 const (
@@ -55,6 +60,7 @@ func testAuthHandlerInit(t *testing.T) {
 	router.HandleFunc("/auth/login", handler.Login).Methods(http.MethodPost)
 	router.HandleFunc("/auth/verification", handler.Verify).Methods(http.MethodPost)
 	router.HandleFunc("/auth/password/forgot", handler.ForgetPassword).Methods(http.MethodPost)
+	router.HandleFunc("/auth/password/reset", handler.ResetPassword).Methods(http.MethodPost)
 }
 
 func testAuthHandlerEnd() {
@@ -237,6 +243,57 @@ func testForgetPassword(t *testing.T, user User, expectedStatusCode int) {
 	userData, err := json.Marshal(user)
 	require.Nil(t, err)
 	req, err := http.NewRequest(http.MethodPost, "/auth/password/forgot", bytes.NewReader(userData))
+	require.Nil(t, err)
+	res := httptest.NewRecorder()
+	router.ServeHTTP(res, req)
+	assert.Equal(t, expectedStatusCode, res.Code)
+}
+
+func TestResetPassword(t *testing.T) {
+	testAuthHandlerInit(t)
+	initRepoForResetPassword()
+
+	testResetUserPassword(t, validResetPassReq, http.StatusOK)
+	testResetUserPassword(t, invalidResetPassReq, http.StatusBadRequest)
+	testResetUserPassword(t, invalidPassResetPassReq, http.StatusBadRequest)
+	testResetUserPassword(t, unmatchingPassResetPassReq, http.StatusBadRequest)
+
+	testAuthHandlerEnd()
+}
+
+func initRepoForResetPassword() {
+	validResetPassReq = resetPasswordRequest{
+		Token:           SAMPLE_VALID_VERIFICATION_TOKEN,
+		Password:        "password",
+		PasswordConfirm: "password",
+	}
+
+	invalidResetPassReq = resetPasswordRequest{
+		Password:        "password",
+		PasswordConfirm: "password",
+	}
+
+	invalidPassResetPassReq = resetPasswordRequest{
+		Token:           SAMPLE_VALID_VERIFICATION_TOKEN,
+		Password:        "pw",
+		PasswordConfirm: "pw",
+	}
+
+	unmatchingPassResetPassReq = resetPasswordRequest{
+		Token:           SAMPLE_VALID_VERIFICATION_TOKEN,
+		Password:        "password",
+		PasswordConfirm: "changedpassword",
+	}
+
+	gomock.InOrder(
+		mockRepo.EXPECT().resetPassword(validResetPassReq.Token, validResetPassReq.Password).Return(nil),
+	)
+}
+
+func testResetUserPassword(t *testing.T, resetPassReq resetPasswordRequest, expectedStatusCode int) {
+	resetReqData, err := json.Marshal(resetPassReq)
+	require.Nil(t, err)
+	req, err := http.NewRequest(http.MethodPost, "/auth/password/reset", bytes.NewReader(resetReqData))
 	require.Nil(t, err)
 	res := httptest.NewRecorder()
 	router.ServeHTTP(res, req)
