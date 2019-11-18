@@ -34,6 +34,9 @@ var (
 
 	loginnableUser   User
 	unloginnableUser User
+
+	userWithEmail    User
+	userWithoutEmail User
 )
 
 const (
@@ -51,6 +54,7 @@ func testAuthHandlerInit(t *testing.T) {
 	router.HandleFunc("/auth/register", handler.Register).Methods(http.MethodPost)
 	router.HandleFunc("/auth/login", handler.Login).Methods(http.MethodPost)
 	router.HandleFunc("/auth/verify", handler.Verify).Methods(http.MethodPost)
+	router.HandleFunc("/auth/password/forgot", handler.ForgetPassword).Methods(http.MethodPost)
 }
 
 func testAuthHandlerEnd() {
@@ -203,6 +207,36 @@ func testLoginUser(t *testing.T, loginUser User, expectedStatusCode int) {
 	userData, err := json.Marshal(loginUser)
 	require.Nil(t, err)
 	req, err := http.NewRequest(http.MethodPost, "/auth/login", bytes.NewReader(userData))
+	require.Nil(t, err)
+	res := httptest.NewRecorder()
+	router.ServeHTTP(res, req)
+	assert.Equal(t, expectedStatusCode, res.Code)
+}
+
+func TestForgetPassword(t *testing.T) {
+	testAuthHandlerInit(t)
+	initRepoForForgetPassword()
+
+	testForgetPassword(t, userWithEmail, http.StatusOK)
+	testForgetPassword(t, userWithoutEmail, http.StatusBadRequest)
+
+	testAuthHandlerEnd()
+}
+
+func initRepoForForgetPassword() {
+	userWithEmail = User{
+		Email: "user@example.com",
+	}
+
+	userWithoutEmail = User{}
+
+	mockRepo.EXPECT().forgetPassword(userWithEmail.Email).Return(nil)
+}
+
+func testForgetPassword(t *testing.T, user User, expectedStatusCode int) {
+	userData, err := json.Marshal(user)
+	require.Nil(t, err)
+	req, err := http.NewRequest(http.MethodPost, "/auth/password/forgot", bytes.NewReader(userData))
 	require.Nil(t, err)
 	res := httptest.NewRecorder()
 	router.ServeHTTP(res, req)
