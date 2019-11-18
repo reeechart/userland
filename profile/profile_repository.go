@@ -22,7 +22,7 @@ type profileRepositoryInterface interface {
 	changeUserEmail(user *auth.User, newEmail string) error
 	changeUserPassword(user *auth.User, oldPassword string, newPassword string) error
 	deleteUser(user *auth.User, password string) error
-	updateUserpicture(user *auth.User, picture []byte) error
+	updateUserPicture(user *auth.User, picture []byte) error
 	deleteUserPicture(user *auth.User) error
 }
 

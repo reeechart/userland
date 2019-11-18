@@ -89,18 +89,18 @@ func (mr *MockprofileRepositoryInterfaceMockRecorder) deleteUser(user, password 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "deleteUser", reflect.TypeOf((*MockprofileRepositoryInterface)(nil).deleteUser), user, password)
 }
 
-// updateUserpicture mocks base method
-func (m *MockprofileRepositoryInterface) updateUserpicture(user *auth.User, picture []byte) error {
+// updateUserPicture mocks base method
+func (m *MockprofileRepositoryInterface) updateUserPicture(user *auth.User, picture []byte) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "updateUserpicture", user, picture)
+	ret := m.ctrl.Call(m, "updateUserPicture", user, picture)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// updateUserpicture indicates an expected call of updateUserpicture
-func (mr *MockprofileRepositoryInterfaceMockRecorder) updateUserpicture(user, picture interface{}) *gomock.Call {
+// updateUserPicture indicates an expected call of updateUserPicture
+func (mr *MockprofileRepositoryInterfaceMockRecorder) updateUserPicture(user, picture interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "updateUserpicture", reflect.TypeOf((*MockprofileRepositoryInterface)(nil).updateUserpicture), user, picture)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "updateUserPicture", reflect.TypeOf((*MockprofileRepositoryInterface)(nil).updateUserPicture), user, picture)
 }
 
 // deleteUserPicture mocks base method
