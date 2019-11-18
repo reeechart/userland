@@ -17,6 +17,15 @@ const (
 	DELETE_PROFILE_PICTURE_BY_ID_QUERY = "UPDATE \"user\" SET picture=NULL WHERE id=$1"
 )
 
+type profileRepositoryInterface interface {
+	updateUserProfile(user *auth.User, newUserProfile UserProfile) error
+	changeUserEmail(user *auth.User, newEmail string) error
+	changeUserPassword(user *auth.User, oldPassword string, newPassword string) error
+	deleteUser(user *auth.User, password string) error
+	updateUserpicture(user *auth.User, picture []byte) error
+	deleteUserPicture(user *auth.User) error
+}
+
 type profileRepository struct {
 	db *sqlx.DB
 }
