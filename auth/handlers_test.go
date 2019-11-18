@@ -53,7 +53,7 @@ func testAuthHandlerInit(t *testing.T) {
 	router = mux.NewRouter()
 	router.HandleFunc("/auth/register", handler.Register).Methods(http.MethodPost)
 	router.HandleFunc("/auth/login", handler.Login).Methods(http.MethodPost)
-	router.HandleFunc("/auth/verify", handler.Verify).Methods(http.MethodPost)
+	router.HandleFunc("/auth/verification", handler.Verify).Methods(http.MethodPost)
 	router.HandleFunc("/auth/password/forgot", handler.ForgetPassword).Methods(http.MethodPost)
 }
 
@@ -170,7 +170,7 @@ func initRepoForVerify() {
 func testVerifyUser(t *testing.T, userVerificationRequest verificationRequest, expectedStatusCode int) {
 	verifReq, err := json.Marshal(userVerificationRequest)
 	require.Nil(t, err)
-	req, err := http.NewRequest(http.MethodPost, "/auth/verify", bytes.NewReader(verifReq))
+	req, err := http.NewRequest(http.MethodPost, "/auth/verification", bytes.NewReader(verifReq))
 	require.Nil(t, err)
 	res := httptest.NewRecorder()
 	router.ServeHTTP(res, req)
