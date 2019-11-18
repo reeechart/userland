@@ -1,6 +1,7 @@
 package profile
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
 	"encoding/json"
@@ -33,6 +34,12 @@ var (
 		ProfilePicture: nil,
 		CreatedAt:      time.Now(),
 	}
+
+	validProfileUpdate           UserProfile
+	invalidFullnameProfileUpdate UserProfile
+	invalidLocationProfileUpdate UserProfile
+	invalidBioProfileUpdate      UserProfile
+	invalidWebProfileUpdate      UserProfile
 )
 
 func testProfileHandlerInit(t *testing.T) {
@@ -43,6 +50,7 @@ func testProfileHandlerInit(t *testing.T) {
 
 	router = mux.NewRouter()
 	router.HandleFunc("/api/me", handler.GetProfile).Methods(http.MethodGet)
+	router.HandleFunc("/api/me", handler.UpdateProfile).Methods(http.MethodPut)
 }
 
 func testProfileHandlerEnd() {
@@ -64,6 +72,69 @@ func testGetUserProfile(t *testing.T, user *auth.User, expectedStatusCode int) {
 	_, err := json.Marshal(user)
 	require.Nil(t, err)
 	req, err := http.NewRequest(http.MethodGet, "/api/me", nil)
+	req = setRequestUserContext(req, user)
+	require.Nil(t, err)
+	res := httptest.NewRecorder()
+	router.ServeHTTP(res, req)
+	assert.Equal(t, expectedStatusCode, res.Code)
+}
+
+func TestUpdateProfile(t *testing.T) {
+	testProfileHandlerInit(t)
+	initSuiteAndRepoForUpdateProfile()
+
+	testUpdateUserProfile(t, &authenticatedUser, validProfileUpdate, http.StatusOK)
+	testUpdateUserProfile(t, &authenticatedUser, invalidFullnameProfileUpdate, http.StatusBadRequest)
+	testUpdateUserProfile(t, &authenticatedUser, invalidLocationProfileUpdate, http.StatusBadRequest)
+	testUpdateUserProfile(t, &authenticatedUser, invalidBioProfileUpdate, http.StatusBadRequest)
+	testUpdateUserProfile(t, &authenticatedUser, invalidWebProfileUpdate, http.StatusBadRequest)
+
+	testProfileHandlerEnd()
+}
+
+func initSuiteAndRepoForUpdateProfile() {
+	validProfileUpdate = UserProfile{
+		Fullname: "updateduser",
+		Location: "Jakarta, Indonesia",
+		Bio:      "my new bio",
+		Web:      "https://example.com/newme",
+	}
+
+	invalidFullnameProfileUpdate = UserProfile{
+		Fullname: "un",
+		Location: "Jakarta, Indonesia",
+		Bio:      "my new bio",
+		Web:      "https://example.com/newme",
+	}
+
+	invalidLocationProfileUpdate = UserProfile{
+		Fullname: "updateduser",
+		Location: STR_LEN_MORE_THAN_128,
+		Bio:      "my new bio",
+		Web:      "https://example.com/newme",
+	}
+
+	invalidBioProfileUpdate = UserProfile{
+		Fullname: "updateduser",
+		Location: "Jakarta, Indonesia",
+		Bio:      STR_LEN_MORE_THAN_128 + STR_LEN_MORE_THAN_128,
+		Web:      "https://example.com/newme",
+	}
+
+	invalidWebProfileUpdate = UserProfile{
+		Fullname: "updateduser",
+		Location: "Jakarta, Indonesia",
+		Bio:      "my new bio",
+		Web:      "whatiwanttofill",
+	}
+
+	mockRepo.EXPECT().updateUserProfile(&authenticatedUser, validProfileUpdate).Return(nil)
+}
+
+func testUpdateUserProfile(t *testing.T, user *auth.User, profileUpdate UserProfile, expectedStatusCode int) {
+	profileUpdateData, err := json.Marshal(profileUpdate)
+	require.Nil(t, err)
+	req, err := http.NewRequest(http.MethodPut, "/api/me", bytes.NewReader(profileUpdateData))
 	req = setRequestUserContext(req, user)
 	require.Nil(t, err)
 	res := httptest.NewRecorder()
