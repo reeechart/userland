@@ -43,6 +43,10 @@ var (
 
 	validEmailReq   ChangeEmailRequest
 	invalidEmailReq ChangeEmailRequest
+
+	validChangePassReq          ChangePasswordRequest
+	invalidPassChangePassReq    ChangePasswordRequest
+	unmatchingPassChangePassReq ChangePasswordRequest
 )
 
 func testProfileHandlerInit(t *testing.T) {
@@ -56,6 +60,7 @@ func testProfileHandlerInit(t *testing.T) {
 	router.HandleFunc("/api/me", handler.UpdateProfile).Methods(http.MethodPut)
 	router.HandleFunc("/api/me/email", handler.GetEmail).Methods(http.MethodGet)
 	router.HandleFunc("/api/me/email", handler.ChangeEmailAddress).Methods(http.MethodPut)
+	router.HandleFunc("/api/me/password", handler.ChangePassword).Methods(http.MethodPost)
 }
 
 func testProfileHandlerEnd() {
@@ -189,6 +194,50 @@ func testChangeUserEmail(t *testing.T, user *auth.User, emailReq ChangeEmailRequ
 	newEmailData, err := json.Marshal(emailReq)
 	require.Nil(t, err)
 	req, err := http.NewRequest(http.MethodPut, "/api/me/email", bytes.NewReader(newEmailData))
+	req = setRequestUserContext(req, user)
+	require.Nil(t, err)
+	res := httptest.NewRecorder()
+	router.ServeHTTP(res, req)
+	assert.Equal(t, expectedStatusCode, res.Code)
+}
+
+func TestChangePassword(t *testing.T) {
+	testProfileHandlerInit(t)
+	initSuiteAndRepoForChangePassword()
+
+	testChangeUserPassword(t, &authenticatedUser, validChangePassReq, http.StatusOK)
+	testChangeUserPassword(t, &authenticatedUser, invalidPassChangePassReq, http.StatusBadRequest)
+	testChangeUserPassword(t, &authenticatedUser, unmatchingPassChangePassReq, http.StatusBadRequest)
+
+	testProfileHandlerEnd()
+}
+
+func initSuiteAndRepoForChangePassword() {
+	validChangePassReq = ChangePasswordRequest{
+		PasswordCurrent: "password",
+		Password:        "passwordnew",
+		PasswordConfirm: "passwordnew",
+	}
+
+	invalidPassChangePassReq = ChangePasswordRequest{
+		PasswordCurrent: "password",
+		Password:        "pass",
+		PasswordConfirm: "pass",
+	}
+
+	unmatchingPassChangePassReq = ChangePasswordRequest{
+		PasswordCurrent: "password",
+		Password:        "newpassword",
+		PasswordConfirm: "othernewpassword",
+	}
+
+	mockRepo.EXPECT().changeUserPassword(&authenticatedUser, validChangePassReq.PasswordCurrent, validChangePassReq.Password).Return(nil)
+}
+
+func testChangeUserPassword(t *testing.T, user *auth.User, changePassReq ChangePasswordRequest, expectedStatusCode int) {
+	changePassData, err := json.Marshal(changePassReq)
+	require.Nil(t, err)
+	req, err := http.NewRequest(http.MethodPost, "/api/me/password", bytes.NewReader(changePassData))
 	req = setRequestUserContext(req, user)
 	require.Nil(t, err)
 	res := httptest.NewRecorder()
