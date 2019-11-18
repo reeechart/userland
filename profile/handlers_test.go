@@ -70,8 +70,6 @@ func TestGetProfile(t *testing.T) {
 }
 
 func testGetUserProfile(t *testing.T, user *auth.User, expectedStatusCode int) {
-	_, err := json.Marshal(user)
-	require.Nil(t, err)
 	req, err := http.NewRequest(http.MethodGet, "/api/me", nil)
 	req = setRequestUserContext(req, user)
 	require.Nil(t, err)
@@ -152,8 +150,6 @@ func TestGetEmail(t *testing.T) {
 }
 
 func testGetUserEmail(t *testing.T, user *auth.User, expectedStatusCode int) {
-	_, err := json.Marshal(user)
-	require.Nil(t, err)
 	req, err := http.NewRequest(http.MethodGet, "/api/me/email", nil)
 	req = setRequestUserContext(req, user)
 	require.Nil(t, err)
