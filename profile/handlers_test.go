@@ -40,6 +40,9 @@ var (
 	invalidLocationProfileUpdate UserProfile
 	invalidBioProfileUpdate      UserProfile
 	invalidWebProfileUpdate      UserProfile
+
+	validEmailReq   ChangeEmailRequest
+	invalidEmailReq ChangeEmailRequest
 )
 
 func testProfileHandlerInit(t *testing.T) {
@@ -52,6 +55,7 @@ func testProfileHandlerInit(t *testing.T) {
 	router.HandleFunc("/api/me", handler.GetProfile).Methods(http.MethodGet)
 	router.HandleFunc("/api/me", handler.UpdateProfile).Methods(http.MethodPut)
 	router.HandleFunc("/api/me/email", handler.GetEmail).Methods(http.MethodGet)
+	router.HandleFunc("/api/me/email", handler.ChangeEmailAddress).Methods(http.MethodPut)
 }
 
 func testProfileHandlerEnd() {
@@ -157,4 +161,37 @@ func testGetUserEmail(t *testing.T, user *auth.User, expectedStatusCode int) {
 	router.ServeHTTP(res, req)
 	assert.Equal(t, expectedStatusCode, res.Code)
 	assert.Equal(t, "{\"email\":\""+user.Email+"\"}", res.Body.String())
+}
+
+func TestChangeEmailAddress(t *testing.T) {
+	testProfileHandlerInit(t)
+	initSuiteAndRepoForChangeEmail()
+
+	testChangeUserEmail(t, &authenticatedUser, validEmailReq, http.StatusOK)
+	testChangeUserEmail(t, &authenticatedUser, invalidEmailReq, http.StatusBadRequest)
+
+	testProfileHandlerEnd()
+}
+
+func initSuiteAndRepoForChangeEmail() {
+	validEmailReq = ChangeEmailRequest{
+		NewEmail: "changedemail@example.com",
+	}
+
+	invalidEmailReq = ChangeEmailRequest{
+		NewEmail: "invalidemailaddress",
+	}
+
+	mockRepo.EXPECT().changeUserEmail(&authenticatedUser, validEmailReq.NewEmail).Return(nil)
+}
+
+func testChangeUserEmail(t *testing.T, user *auth.User, emailReq ChangeEmailRequest, expectedStatusCode int) {
+	newEmailData, err := json.Marshal(emailReq)
+	require.Nil(t, err)
+	req, err := http.NewRequest(http.MethodPut, "/api/me/email", bytes.NewReader(newEmailData))
+	req = setRequestUserContext(req, user)
+	require.Nil(t, err)
+	res := httptest.NewRecorder()
+	router.ServeHTTP(res, req)
+	assert.Equal(t, expectedStatusCode, res.Code)
 }
