@@ -47,6 +47,8 @@ var (
 	validChangePassReq          ChangePasswordRequest
 	invalidPassChangePassReq    ChangePasswordRequest
 	unmatchingPassChangePassReq ChangePasswordRequest
+
+	deleteAccReq DeleteAccountRequest
 )
 
 func testProfileHandlerInit(t *testing.T) {
@@ -61,6 +63,7 @@ func testProfileHandlerInit(t *testing.T) {
 	router.HandleFunc("/api/me/email", handler.GetEmail).Methods(http.MethodGet)
 	router.HandleFunc("/api/me/email", handler.ChangeEmailAddress).Methods(http.MethodPut)
 	router.HandleFunc("/api/me/password", handler.ChangePassword).Methods(http.MethodPost)
+	router.HandleFunc("/api/me/delete", handler.DeleteAccount).Methods(http.MethodPost)
 }
 
 func testProfileHandlerEnd() {
@@ -238,6 +241,26 @@ func testChangeUserPassword(t *testing.T, user *auth.User, changePassReq ChangeP
 	changePassData, err := json.Marshal(changePassReq)
 	require.Nil(t, err)
 	req, err := http.NewRequest(http.MethodPost, "/api/me/password", bytes.NewReader(changePassData))
+	req = setRequestUserContext(req, user)
+	require.Nil(t, err)
+	res := httptest.NewRecorder()
+	router.ServeHTTP(res, req)
+	assert.Equal(t, expectedStatusCode, res.Code)
+}
+
+func TestDeleteAccount(t *testing.T) {
+	testProfileHandlerInit(t)
+	mockRepo.EXPECT().deleteUser(&authenticatedUser, authenticatedUser.Password).Return(nil)
+
+	testDeleteUserAccount(t, &authenticatedUser, http.StatusOK)
+
+	testProfileHandlerEnd()
+}
+
+func testDeleteUserAccount(t *testing.T, user *auth.User, expectedStatusCode int) {
+	deleteAccData, err := json.Marshal(deleteAccReq)
+	require.Nil(t, err)
+	req, err := http.NewRequest(http.MethodPost, "/api/me/delete", bytes.NewReader(deleteAccData))
 	req = setRequestUserContext(req, user)
 	require.Nil(t, err)
 	res := httptest.NewRecorder()
