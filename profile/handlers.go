@@ -10,7 +10,11 @@ import (
 
 var err error
 
-func GetProfile(w http.ResponseWriter, r *http.Request) {
+type ProfileHandler struct {
+	ProfileRepo profileRepositoryInterface
+}
+
+func (handler ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value("user").(*auth.User)
 	userProfile := UserProfile{
 		Id:             user.Id,
@@ -24,7 +28,7 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 	response.RespondSuccessWithBody(w, userProfile)
 }
 
-func UpdateProfile(w http.ResponseWriter, r *http.Request) {
+func (handler ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value("user").(*auth.User)
 
 	var userInfo UserProfile
@@ -41,8 +45,7 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	repo := getProfileRepository()
-	err = repo.updateUserProfile(user, userInfo)
+	err = handler.ProfileRepo.updateUserProfile(user, userInfo)
 
 	if err != nil {
 		response.RespondBadRequest(w, UNABLE_TO_UPDATE_PROFILE, err)
@@ -52,12 +55,12 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	response.RespondSuccess(w)
 }
 
-func GetEmail(w http.ResponseWriter, r *http.Request) {
+func (handler ProfileHandler) GetEmail(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value("user").(*auth.User)
 	response.RespondSuccessWithBody(w, map[string]string{"email": user.Email})
 }
 
-func ChangeEmailAddress(w http.ResponseWriter, r *http.Request) {
+func (handler ProfileHandler) ChangeEmailAddress(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value("user").(*auth.User)
 
 	var emailReq ChangeEmailRequest
@@ -74,8 +77,7 @@ func ChangeEmailAddress(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	repo := getProfileRepository()
-	err = repo.changeUserEmail(user, emailReq.NewEmail)
+	err = handler.ProfileRepo.changeUserEmail(user, emailReq.NewEmail)
 
 	if err != nil {
 		response.RespondBadRequest(w, UNABLE_TO_EXEC_UPDATE_EMAIL_QUERY, err)
@@ -85,7 +87,7 @@ func ChangeEmailAddress(w http.ResponseWriter, r *http.Request) {
 	response.RespondSuccess(w)
 }
 
-func ChangePassword(w http.ResponseWriter, r *http.Request) {
+func (handler ProfileHandler) ChangePassword(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value("user").(*auth.User)
 
 	var passwordReq ChangePasswordRequest
@@ -108,8 +110,7 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	repo := getProfileRepository()
-	err = repo.changeUserPassword(user, passwordReq.PasswordCurrent, passwordReq.Password)
+	err = handler.ProfileRepo.changeUserPassword(user, passwordReq.PasswordCurrent, passwordReq.Password)
 
 	if err != nil {
 		response.RespondBadRequest(w, CHANGE_PASSWORD_INCORRECT_CURRENT_PASSWORD, err)
@@ -119,7 +120,7 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 	response.RespondSuccess(w)
 }
 
-func DeleteAccount(w http.ResponseWriter, r *http.Request) {
+func (handler ProfileHandler) DeleteAccount(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value("user").(*auth.User)
 
 	var delReq DeleteAccountRequest
@@ -130,8 +131,7 @@ func DeleteAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	repo := getProfileRepository()
-	err = repo.deleteUser(user, delReq.Password)
+	err = handler.ProfileRepo.deleteUser(user, delReq.Password)
 
 	if err != nil {
 		response.RespondBadRequest(w, DELETE_ACCOUNT_INCORRECT_PASSWORD, err)
@@ -141,9 +141,9 @@ func DeleteAccount(w http.ResponseWriter, r *http.Request) {
 	response.RespondSuccess(w)
 }
 
-func UpdateProfilePicture(w http.ResponseWriter, r *http.Request) {
+func (handler ProfileHandler) UpdateProfilePicture(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value("user").(*auth.User)
-	file, handler, err := r.FormFile("file")
+	file, fileHeader, err := r.FormFile("file")
 
 	if err != nil {
 		response.RespondBadRequest(w, PICTURE_CANNOT_BE_FETCHED_FROM_FORM, err)
@@ -152,7 +152,7 @@ func UpdateProfilePicture(w http.ResponseWriter, r *http.Request) {
 
 	defer file.Close()
 
-	picture := make([]byte, handler.Size)
+	picture := make([]byte, fileHeader.Size)
 	_, err = file.Read(picture)
 
 	if err != nil {
@@ -160,8 +160,7 @@ func UpdateProfilePicture(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	repo := getProfileRepository()
-	err = repo.updateUserPicture(user, picture)
+	err = handler.ProfileRepo.updateUserPicture(user, picture)
 
 	if err != nil {
 		response.RespondBadRequest(w, PICTURE_FAILED_TO_EXEC_QUERY, err)
@@ -171,11 +170,10 @@ func UpdateProfilePicture(w http.ResponseWriter, r *http.Request) {
 	response.RespondSuccess(w)
 }
 
-func DeleteProfilePicture(w http.ResponseWriter, r *http.Request) {
+func (handler ProfileHandler) DeleteProfilePicture(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value("user").(*auth.User)
 
-	repo := getProfileRepository()
-	err = repo.deleteUserPicture(user)
+	err = handler.ProfileRepo.deleteUserPicture(user)
 
 	if err != nil {
 		response.RespondBadRequest(w, PICTURE_FAILED_TO_EXEC_QUERY, err)

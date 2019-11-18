@@ -30,7 +30,7 @@ type profileRepository struct {
 	db *sqlx.DB
 }
 
-func getProfileRepository() *profileRepository {
+func GetProfileRepository() *profileRepository {
 	repo := profileRepository{appcontext.GetDB()}
 	return &repo
 }

@@ -10,7 +10,8 @@ import (
 )
 
 var (
-	authHandler auth.AuthHandler
+	authHandler    auth.AuthHandler
+	profileHandler profile.ProfileHandler
 )
 
 func GetRouter() *mux.Router {
@@ -24,6 +25,7 @@ func GetRouter() *mux.Router {
 
 func initHandler() {
 	authHandler = auth.AuthHandler{UserRepo: auth.GetUserRepository()}
+	profileHandler = profile.ProfileHandler{ProfileRepo: profile.GetProfileRepository()}
 }
 
 func setupRouteHandler(router *mux.Router) {
@@ -34,12 +36,12 @@ func setupRouteHandler(router *mux.Router) {
 	router.HandleFunc("/api/auth/password/forgot", authHandler.ForgetPassword).Methods(http.MethodPost)
 	router.HandleFunc("/api/auth/password/reset", authHandler.ResetPassword).Methods(http.MethodPost)
 
-	router.HandleFunc("/api/me", auth.WithVerifyJWT(profile.GetProfile)).Methods(http.MethodGet)
-	router.HandleFunc("/api/me", auth.WithVerifyJWT(profile.UpdateProfile)).Methods(http.MethodPut)
-	router.HandleFunc("/api/me/email", auth.WithVerifyJWT(profile.GetEmail)).Methods(http.MethodGet)
-	router.HandleFunc("/api/me/email", auth.WithVerifyJWT(profile.ChangeEmailAddress)).Methods(http.MethodPut)
-	router.HandleFunc("/api/me/password", auth.WithVerifyJWT(profile.ChangePassword)).Methods(http.MethodPost)
-	router.HandleFunc("/api/me/delete", auth.WithVerifyJWT(profile.DeleteAccount)).Methods(http.MethodPost)
-	router.HandleFunc("/api/me/picture", auth.WithVerifyJWT(profile.UpdateProfilePicture)).Methods(http.MethodPut)
-	router.HandleFunc("/api/me/picture", auth.WithVerifyJWT(profile.DeleteProfilePicture)).Methods(http.MethodDelete)
+	router.HandleFunc("/api/me", auth.WithVerifyJWT(profileHandler.GetProfile)).Methods(http.MethodGet)
+	router.HandleFunc("/api/me", auth.WithVerifyJWT(profileHandler.UpdateProfile)).Methods(http.MethodPut)
+	router.HandleFunc("/api/me/email", auth.WithVerifyJWT(profileHandler.GetEmail)).Methods(http.MethodGet)
+	router.HandleFunc("/api/me/email", auth.WithVerifyJWT(profileHandler.ChangeEmailAddress)).Methods(http.MethodPut)
+	router.HandleFunc("/api/me/password", auth.WithVerifyJWT(profileHandler.ChangePassword)).Methods(http.MethodPost)
+	router.HandleFunc("/api/me/delete", auth.WithVerifyJWT(profileHandler.DeleteAccount)).Methods(http.MethodPost)
+	router.HandleFunc("/api/me/picture", auth.WithVerifyJWT(profileHandler.UpdateProfilePicture)).Methods(http.MethodPut)
+	router.HandleFunc("/api/me/picture", auth.WithVerifyJWT(profileHandler.DeleteProfilePicture)).Methods(http.MethodDelete)
 }
