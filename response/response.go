@@ -8,11 +8,11 @@ import (
 )
 
 func respondWithJSON(w http.ResponseWriter, statusCode int, payload interface{}) {
-	response_body, _ := json.Marshal(payload)
+	responseBody, _ := json.Marshal(payload)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
-	w.Write(response_body)
+	w.Write(responseBody)
 }
 
 func RespondSuccess(w http.ResponseWriter) {
