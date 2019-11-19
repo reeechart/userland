@@ -94,6 +94,11 @@ func (handler AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, _ := handler.UserRepo.getUserByEmail(loginUser.Email)
+	if !user.Verified {
+		response.RespondUnauthorized(w, ulanderrors.ErrLoginUnmatchUnverified)
+		return
+	}
+
 	expirationTime := time.Now().Add(HOURS_IN_DAY * time.Hour)
 	token, err := generateJWT(*user, expirationTime)
 	if err != nil {
