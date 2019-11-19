@@ -5,6 +5,8 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"io"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -49,6 +51,14 @@ var (
 	unmatchingPassChangePassReq ChangePasswordRequest
 
 	deleteAccReq DeleteAccountRequest
+
+	changeProfPicReq *http.Request
+	profPic          bytes.Buffer
+)
+
+const (
+	FILE_NAME         = "sample.jpg"
+	SAMPLE_IMAGE_BYTE = "sample_image_byte"
 )
 
 func testProfileHandlerInit(t *testing.T) {
@@ -64,6 +74,7 @@ func testProfileHandlerInit(t *testing.T) {
 	router.HandleFunc("/api/me/email", handler.ChangeEmailAddress).Methods(http.MethodPut)
 	router.HandleFunc("/api/me/password", handler.ChangePassword).Methods(http.MethodPost)
 	router.HandleFunc("/api/me/delete", handler.DeleteAccount).Methods(http.MethodPost)
+	router.HandleFunc("/api/me/picture", handler.UpdateProfilePicture).Methods(http.MethodPut)
 }
 
 func testProfileHandlerEnd() {
@@ -263,6 +274,42 @@ func testDeleteUserAccount(t *testing.T, user *auth.User, expectedStatusCode int
 	req, err := http.NewRequest(http.MethodPost, "/api/me/delete", bytes.NewReader(deleteAccData))
 	req = setRequestUserContext(req, user)
 	require.Nil(t, err)
+	res := httptest.NewRecorder()
+	router.ServeHTTP(res, req)
+	assert.Equal(t, expectedStatusCode, res.Code)
+}
+
+func TestUpdateProfilePicture(t *testing.T) {
+	testProfileHandlerInit(t)
+	initChangeProfPicRequest()
+
+	mockRepo.EXPECT().updateUserPicture(&authenticatedUser, []byte(SAMPLE_IMAGE_BYTE)).Return(nil)
+
+	testUpdateUserProfilePicture(t, &authenticatedUser, changeProfPicReq, http.StatusOK)
+
+	testProfileHandlerEnd()
+}
+
+func initChangeProfPicRequest() {
+	multipartWriter := multipart.NewWriter(&profPic)
+	fileWriter, err := multipartWriter.CreateFormFile("file", FILE_NAME)
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = io.Copy(fileWriter, bytes.NewBuffer([]byte(SAMPLE_IMAGE_BYTE)))
+	if err != nil {
+		panic(err)
+	}
+
+	multipartWriter.Close()
+
+	changeProfPicReq, err = http.NewRequest(http.MethodPut, "/api/me/picture", &profPic)
+	changeProfPicReq.Header.Set("Content-Type", multipartWriter.FormDataContentType())
+}
+
+func testUpdateUserProfilePicture(t *testing.T, user *auth.User, req *http.Request, expectedStatusCode int) {
+	req = setRequestUserContext(req, user)
 	res := httptest.NewRecorder()
 	router.ServeHTTP(res, req)
 	assert.Equal(t, expectedStatusCode, res.Code)
