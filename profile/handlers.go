@@ -51,7 +51,7 @@ func (handler ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Reque
 	err = handler.ProfileRepo.updateUserProfile(user, userInfo)
 
 	if err != nil {
-		log.Info(err)
+		log.Warn(err)
 		response.RespondBadRequest(w, ulanderrors.ErrUpdateProfileQueryExec)
 		return
 	}
@@ -87,7 +87,7 @@ func (handler ProfileHandler) ChangeEmailAddress(w http.ResponseWriter, r *http.
 	err = handler.ProfileRepo.changeUserEmail(user, emailReq.NewEmail)
 
 	if err != nil {
-		log.Info(err)
+		log.Warn(err)
 		response.RespondBadRequest(w, ulanderrors.ErrChangeEmailQueryExec)
 		return
 	}
@@ -123,7 +123,7 @@ func (handler ProfileHandler) ChangePassword(w http.ResponseWriter, r *http.Requ
 	err = handler.ProfileRepo.changeUserPassword(user, passwordReq.PasswordCurrent, passwordReq.Password)
 
 	if err != nil {
-		log.Info(err)
+		log.Warn(err)
 		response.RespondBadRequest(w, ulanderrors.ErrChangePasswordIncorrectCurrentPass)
 		return
 	}
@@ -147,7 +147,7 @@ func (handler ProfileHandler) DeleteAccount(w http.ResponseWriter, r *http.Reque
 	err = handler.ProfileRepo.deleteUser(user, delReq.Password)
 
 	if err != nil {
-		log.Info(err)
+		log.Warn(err)
 		response.RespondBadRequest(w, ulanderrors.ErrDeleteAccountIncorrectPass)
 		return
 	}
@@ -180,7 +180,7 @@ func (handler ProfileHandler) UpdateProfilePicture(w http.ResponseWriter, r *htt
 	err = handler.ProfileRepo.updateUserPicture(user, picture)
 
 	if err != nil {
-		log.Info(err)
+		log.Warn(err)
 		response.RespondBadRequest(w, ulanderrors.ErrUpdatePictureQueryExec)
 		return
 	}
@@ -195,7 +195,7 @@ func (handler ProfileHandler) DeleteProfilePicture(w http.ResponseWriter, r *htt
 	err = handler.ProfileRepo.deleteUserPicture(user)
 
 	if err != nil {
-		log.Info(err)
+		log.Warn(err)
 		response.RespondBadRequest(w, ulanderrors.ErrUpdatePictureQueryExec)
 		return
 	}

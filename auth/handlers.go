@@ -48,7 +48,7 @@ func (handler AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	err = handler.UserRepo.createNewUser(userRegistrationData)
 
 	if err != nil {
-		log.Info(err)
+		log.Warn(err)
 		response.RespondBadRequest(w, ulanderrors.ErrRegistrationQueryExec)
 		return
 	}
@@ -76,7 +76,7 @@ func (handler AuthHandler) Verify(w http.ResponseWriter, r *http.Request) {
 	err = handler.UserRepo.verifyUser(verifReq.Recipient, verifReq.VerificationToken)
 
 	if err != nil {
-		log.Info(err)
+		log.Warn(err)
 		response.RespondBadRequest(w, ulanderrors.ErrVerificationQueryExec)
 		return
 	}
@@ -104,7 +104,7 @@ func (handler AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	err = handler.UserRepo.loginUser(loginUser.Email, loginUser.Password)
 
 	if err != nil {
-		log.Info(err)
+		log.Warn(err)
 		response.RespondUnauthorized(w, ulanderrors.ErrLoginUnmatch)
 		return
 	}
@@ -153,7 +153,7 @@ func (handler AuthHandler) ForgetPassword(w http.ResponseWriter, r *http.Request
 	err = handler.UserRepo.forgetPassword(user.Email)
 
 	if err != nil {
-		log.Info(err)
+		log.Warn(err)
 		response.RespondBadRequest(w, ulanderrors.ErrForgetPassQueryExec)
 		return
 	}
@@ -193,7 +193,7 @@ func (handler AuthHandler) ResetPassword(w http.ResponseWriter, r *http.Request)
 	err = handler.UserRepo.resetPassword(req.Token, req.Password)
 
 	if err != nil {
-		log.Info(err)
+		log.Warn(err)
 		response.RespondBadRequest(w, ulanderrors.ErrResetPassQueryExec)
 		return
 	}
