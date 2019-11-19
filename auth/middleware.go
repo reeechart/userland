@@ -11,7 +11,11 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func WithVerifyJWT(next http.HandlerFunc) http.HandlerFunc {
+type AuthMiddleware struct {
+	UserRepo userRepositoryInterface
+}
+
+func (middleware AuthMiddleware) WithVerifyJWT(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("token")
 
@@ -50,8 +54,7 @@ func WithVerifyJWT(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		userRepo := GetUserRepository()
-		user, err := userRepo.getUserById(claims.UserId)
+		user, err := middleware.UserRepo.getUserById(claims.UserId)
 		if err != nil {
 			log.Warn(err)
 			response.RespondBadRequest(w, ulanderrors.ErrTokenUserIdDoesNotExist)

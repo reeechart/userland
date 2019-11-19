@@ -11,21 +11,23 @@ import (
 
 var (
 	authHandler    auth.AuthHandler
+	authMiddleware auth.AuthMiddleware
 	profileHandler profile.ProfileHandler
 )
 
 func GetRouter() *mux.Router {
 	router := mux.NewRouter()
 
-	initHandler()
+	initHandlersAndMiddlewares()
 	setupRouteHandler(router)
 
 	return router
 }
 
-func initHandler() {
+func initHandlersAndMiddlewares() {
 	authHandler = auth.AuthHandler{UserRepo: auth.GetUserRepository()}
 	profileHandler = profile.ProfileHandler{ProfileRepo: profile.GetProfileRepository()}
+	authMiddleware = auth.AuthMiddleware{UserRepo: auth.GetUserRepository()}
 }
 
 func setupRouteHandler(router *mux.Router) {
@@ -36,12 +38,12 @@ func setupRouteHandler(router *mux.Router) {
 	router.HandleFunc("/api/auth/password/forgot", authHandler.ForgetPassword).Methods(http.MethodPost)
 	router.HandleFunc("/api/auth/password/reset", authHandler.ResetPassword).Methods(http.MethodPost)
 
-	router.HandleFunc("/api/me", auth.WithVerifyJWT(profileHandler.GetProfile)).Methods(http.MethodGet)
-	router.HandleFunc("/api/me", auth.WithVerifyJWT(profileHandler.UpdateProfile)).Methods(http.MethodPut)
-	router.HandleFunc("/api/me/email", auth.WithVerifyJWT(profileHandler.GetEmail)).Methods(http.MethodGet)
-	router.HandleFunc("/api/me/email", auth.WithVerifyJWT(profileHandler.ChangeEmailAddress)).Methods(http.MethodPut)
-	router.HandleFunc("/api/me/password", auth.WithVerifyJWT(profileHandler.ChangePassword)).Methods(http.MethodPost)
-	router.HandleFunc("/api/me/delete", auth.WithVerifyJWT(profileHandler.DeleteAccount)).Methods(http.MethodPost)
-	router.HandleFunc("/api/me/picture", auth.WithVerifyJWT(profileHandler.UpdateProfilePicture)).Methods(http.MethodPut)
-	router.HandleFunc("/api/me/picture", auth.WithVerifyJWT(profileHandler.DeleteProfilePicture)).Methods(http.MethodDelete)
+	router.HandleFunc("/api/me", authMiddleware.WithVerifyJWT(profileHandler.GetProfile)).Methods(http.MethodGet)
+	router.HandleFunc("/api/me", authMiddleware.WithVerifyJWT(profileHandler.UpdateProfile)).Methods(http.MethodPut)
+	router.HandleFunc("/api/me/email", authMiddleware.WithVerifyJWT(profileHandler.GetEmail)).Methods(http.MethodGet)
+	router.HandleFunc("/api/me/email", authMiddleware.WithVerifyJWT(profileHandler.ChangeEmailAddress)).Methods(http.MethodPut)
+	router.HandleFunc("/api/me/password", authMiddleware.WithVerifyJWT(profileHandler.ChangePassword)).Methods(http.MethodPost)
+	router.HandleFunc("/api/me/delete", authMiddleware.WithVerifyJWT(profileHandler.DeleteAccount)).Methods(http.MethodPost)
+	router.HandleFunc("/api/me/picture", authMiddleware.WithVerifyJWT(profileHandler.UpdateProfilePicture)).Methods(http.MethodPut)
+	router.HandleFunc("/api/me/picture", authMiddleware.WithVerifyJWT(profileHandler.DeleteProfilePicture)).Methods(http.MethodDelete)
 }
