@@ -8,6 +8,7 @@ import (
 	"userland/response"
 
 	"github.com/dgrijalva/jwt-go"
+	log "github.com/sirupsen/logrus"
 )
 
 func WithVerifyJWT(next http.HandlerFunc) http.HandlerFunc {
@@ -16,9 +17,11 @@ func WithVerifyJWT(next http.HandlerFunc) http.HandlerFunc {
 
 		if err != nil {
 			if err == http.ErrNoCookie {
+				log.Info(err)
 				response.RespondUnauthorized(w, ulanderrors.ErrTokenNotProvided)
 				return
 			}
+			log.Info(err)
 			response.RespondBadRequest(w, ulanderrors.ErrTokenNotFound)
 			return
 		}
@@ -32,14 +35,17 @@ func WithVerifyJWT(next http.HandlerFunc) http.HandlerFunc {
 
 		if err != nil {
 			if err == jwt.ErrSignatureInvalid {
+				log.Info(err)
 				response.RespondUnauthorized(w, ulanderrors.ErrTokenInvalidSignature)
 				return
 			}
+			log.Info(err)
 			response.RespondBadRequest(w, ulanderrors.ErrTokenInvalidContent)
 			return
 		}
 
 		if !token.Valid {
+			log.Info("Token expired")
 			response.RespondUnauthorized(w, ulanderrors.ErrTokenExpired)
 			return
 		}
@@ -47,10 +53,12 @@ func WithVerifyJWT(next http.HandlerFunc) http.HandlerFunc {
 		userRepo := GetUserRepository()
 		user, err := userRepo.getUserById(claims.UserId)
 		if err != nil {
+			log.Warn(err)
 			response.RespondBadRequest(w, ulanderrors.ErrTokenUserIdDoesNotExist)
 			return
 		}
 
+		log.Info("Authentication successful")
 		ctx := context.WithValue(r.Context(), "user", user)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
