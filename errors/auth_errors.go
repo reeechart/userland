@@ -36,9 +36,14 @@ var (
 		Message: LOGIN_INCOMPLETE_CREDENTIALS_MESSAGE,
 	}
 
-	ErrLoginUnmatchUnverified = UserlandError{
-		Code:    LOGIN_PASSWORD_NOT_MATCH_OR_UNVERIFIED,
-		Message: LOGIN_PASSWORD_NOT_MATCH_OR_UNVERIFIED_MESSAGE,
+	ErrLoginUnmatch = UserlandError{
+		Code:    LOGIN_PASSWORD_NOT_MATCH,
+		Message: LOGIN_PASSWORD_NOT_MATCH_MESSAGE,
+	}
+
+	ErrLoginUnverified = UserlandError{
+		Code:    LOGIN_ACCOUNT_UNVERIFIED,
+		Message: LOGIN_ACCOUNT_UNVERIFIED_MESSAGE,
 	}
 
 	ErrLoginJWT = UserlandError{

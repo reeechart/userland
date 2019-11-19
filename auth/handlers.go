@@ -89,13 +89,13 @@ func (handler AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	err = handler.UserRepo.loginUser(loginUser.Email, loginUser.Password)
 
 	if err != nil {
-		response.RespondUnauthorized(w, ulanderrors.ErrLoginUnmatchUnverified)
+		response.RespondUnauthorized(w, ulanderrors.ErrLoginUnmatch)
 		return
 	}
 
 	user, _ := handler.UserRepo.getUserByEmail(loginUser.Email)
 	if !user.Verified {
-		response.RespondUnauthorized(w, ulanderrors.ErrLoginUnmatchUnverified)
+		response.RespondUnauthorized(w, ulanderrors.ErrLoginUnverified)
 		return
 	}
 
