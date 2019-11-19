@@ -70,7 +70,7 @@ func testAuthHandlerEnd() {
 
 func TestRegister(t *testing.T) {
 	testAuthHandlerInit(t)
-	initRepoForRegistration()
+	initSuiteAndRepoForRegistration()
 
 	testRegisterUser(t, validNewUser, http.StatusOK)
 	testRegisterUser(t, invalidNewUser, http.StatusBadRequest)
@@ -81,7 +81,7 @@ func TestRegister(t *testing.T) {
 	testAuthHandlerEnd()
 }
 
-func initRepoForRegistration() {
+func initSuiteAndRepoForRegistration() {
 	validNewUser = userRegistration{
 		Fullname:        "user",
 		Email:           "user@example.com",
@@ -133,7 +133,7 @@ func testRegisterUser(t *testing.T, newUser userRegistration, expectedStatusCode
 
 func TestVerify(t *testing.T) {
 	testAuthHandlerInit(t)
-	initRepoForVerify()
+	initSuiteAndRepoForVerify()
 
 	testVerifyUser(t, validVerifReq, http.StatusOK)
 	testVerifyUser(t, invalidVerifReq, http.StatusBadRequest)
@@ -143,7 +143,7 @@ func TestVerify(t *testing.T) {
 	testAuthHandlerEnd()
 }
 
-func initRepoForVerify() {
+func initSuiteAndRepoForVerify() {
 	validVerifReq = verificationRequest{
 		Type:              "email.verify",
 		Recipient:         "user@example.com",
@@ -186,7 +186,7 @@ func testVerifyUser(t *testing.T, userVerificationRequest verificationRequest, e
 
 func TestLogin(t *testing.T) {
 	testAuthHandlerInit(t)
-	initRepoForLogin()
+	initSuiteAndRepoForLogin()
 
 	testLoginUser(t, loginnableUser, http.StatusOK)
 	testLoginUser(t, unloginnableUser, http.StatusBadRequest)
@@ -195,7 +195,7 @@ func TestLogin(t *testing.T) {
 	testAuthHandlerEnd()
 }
 
-func initRepoForLogin() {
+func initSuiteAndRepoForLogin() {
 	loginnableUser = User{
 		Email:    "user@example.com",
 		Password: "password",
@@ -232,7 +232,7 @@ func testLoginUser(t *testing.T, loginUser User, expectedStatusCode int) {
 
 func TestForgetPassword(t *testing.T) {
 	testAuthHandlerInit(t)
-	initRepoForForgetPassword()
+	initSuiteAndRepoForForgetPassword()
 
 	testForgetPassword(t, userWithEmail, http.StatusOK)
 	testForgetPassword(t, userWithoutEmail, http.StatusBadRequest)
@@ -240,7 +240,7 @@ func TestForgetPassword(t *testing.T) {
 	testAuthHandlerEnd()
 }
 
-func initRepoForForgetPassword() {
+func initSuiteAndRepoForForgetPassword() {
 	userWithEmail = User{
 		Email: "user@example.com",
 	}
@@ -262,7 +262,7 @@ func testForgetPassword(t *testing.T, user User, expectedStatusCode int) {
 
 func TestResetPassword(t *testing.T) {
 	testAuthHandlerInit(t)
-	initRepoForResetPassword()
+	initSuiteAndRepoForResetPassword()
 
 	testResetUserPassword(t, validResetPassReq, http.StatusOK)
 	testResetUserPassword(t, invalidResetPassReq, http.StatusBadRequest)
@@ -272,7 +272,7 @@ func TestResetPassword(t *testing.T) {
 	testAuthHandlerEnd()
 }
 
-func initRepoForResetPassword() {
+func initSuiteAndRepoForResetPassword() {
 	validResetPassReq = resetPasswordRequest{
 		Token:           SAMPLE_VALID_VERIFICATION_TOKEN,
 		Password:        "password",
