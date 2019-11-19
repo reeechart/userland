@@ -1,11 +1,11 @@
 package profile
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 	"userland/auth"
 	ulanderrors "userland/errors"
+	"userland/request"
 	"userland/response"
 )
 
@@ -33,8 +33,7 @@ func (handler ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Reque
 	user := r.Context().Value("user").(*auth.User)
 
 	var userInfo UserProfile
-	err = json.NewDecoder(r.Body).Decode(&userInfo)
-
+	err = request.ParseJSON(r.Body, &userInfo)
 	if err != nil {
 		response.RespondBadRequest(w, ulanderrors.ErrParseBody)
 		return
@@ -64,7 +63,7 @@ func (handler ProfileHandler) ChangeEmailAddress(w http.ResponseWriter, r *http.
 	user := r.Context().Value("user").(*auth.User)
 
 	var emailReq ChangeEmailRequest
-	err = json.NewDecoder(r.Body).Decode(&emailReq)
+	err = request.ParseJSON(r.Body, &emailReq)
 
 	if err != nil {
 		response.RespondBadRequest(w, ulanderrors.ErrParseBody)
@@ -90,7 +89,7 @@ func (handler ProfileHandler) ChangePassword(w http.ResponseWriter, r *http.Requ
 	user := r.Context().Value("user").(*auth.User)
 
 	var passwordReq ChangePasswordRequest
-	err = json.NewDecoder(r.Body).Decode(&passwordReq)
+	err = request.ParseJSON(r.Body, &passwordReq)
 
 	if err != nil {
 		response.RespondBadRequest(w, ulanderrors.ErrParseBody)
@@ -122,7 +121,7 @@ func (handler ProfileHandler) DeleteAccount(w http.ResponseWriter, r *http.Reque
 	user := r.Context().Value("user").(*auth.User)
 
 	var delReq DeleteAccountRequest
-	err = json.NewDecoder(r.Body).Decode(&delReq)
+	err = request.ParseJSON(r.Body, &delReq)
 
 	if err != nil {
 		response.RespondBadRequest(w, ulanderrors.ErrParseBody)

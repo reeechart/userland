@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 	ulanderrors "userland/errors"
+	"userland/request"
 	"userland/response"
 )
 
@@ -16,7 +17,7 @@ type AuthHandler struct {
 
 func (handler AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var userRegistrationData userRegistration
-	err = json.NewDecoder(r.Body).Decode(&userRegistrationData)
+	err = request.ParseJSON(r.Body, &userRegistrationData)
 
 	if err != nil {
 		response.RespondBadRequest(w, ulanderrors.ErrParseBody)
@@ -74,7 +75,7 @@ func (handler AuthHandler) Verify(w http.ResponseWriter, r *http.Request) {
 
 func (handler AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var loginUser User
-	err = json.NewDecoder(r.Body).Decode(&loginUser)
+	err = request.ParseJSON(r.Body, &loginUser)
 
 	if err != nil {
 		response.RespondBadRequest(w, ulanderrors.ErrParseBody)
@@ -117,7 +118,7 @@ func (handler AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 func (handler AuthHandler) ForgetPassword(w http.ResponseWriter, r *http.Request) {
 	var user User
-	err = json.NewDecoder(r.Body).Decode(&user)
+	err = request.ParseJSON(r.Body, &user)
 
 	if err != nil {
 		response.RespondBadRequest(w, ulanderrors.ErrParseBody)
@@ -141,7 +142,7 @@ func (handler AuthHandler) ForgetPassword(w http.ResponseWriter, r *http.Request
 
 func (handler AuthHandler) ResetPassword(w http.ResponseWriter, r *http.Request) {
 	var req resetPasswordRequest
-	err = json.NewDecoder(r.Body).Decode(&req)
+	err = request.ParseJSON(r.Body, &req)
 
 	if err != nil {
 		response.RespondBadRequest(w, ulanderrors.ErrParseBody)
