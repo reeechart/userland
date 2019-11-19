@@ -1,7 +1,7 @@
 package errors
 
 var (
-	ErrUserInfoInvalid = UserlandError{
+	ErrUpdateProfileUserInfoInvalid = UserlandError{
 		Code:    UPDATE_PROFILE_USER_INFO_INVALID,
 		Message: UPDATE_PROFILE_USER_INFO_INVALID_MESSAGE,
 	}
