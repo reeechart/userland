@@ -20,18 +20,15 @@ const (
 )
 
 func GetDatabaseConnectionString() string {
-	dbConfig, err := getDatabaseConfig()
-	if err != nil {
-		panic(err)
-	}
+	dbConfig := getDatabaseConfig()
 	return fmt.Sprintf("dbname=%s host=%s port=%s sslmode=%s", dbConfig.dbname, dbConfig.host, dbConfig.port, dbConfig.ssl)
 }
 
-func getDatabaseConfig() (*databaseConfig, error) {
+func getDatabaseConfig() *databaseConfig {
 	return &databaseConfig{
 		dbname: os.Getenv("DB_NAME"),
 		host:   os.Getenv("DB_HOST"),
 		port:   os.Getenv("DB_PORT"),
 		ssl:    os.Getenv("ENABLE_SSL"),
-	}, nil
+	}
 }
