@@ -75,6 +75,7 @@ func testProfileHandlerInit(t *testing.T) {
 	router.HandleFunc("/api/me/password", handler.ChangePassword).Methods(http.MethodPost)
 	router.HandleFunc("/api/me/delete", handler.DeleteAccount).Methods(http.MethodPost)
 	router.HandleFunc("/api/me/picture", handler.UpdateProfilePicture).Methods(http.MethodPut)
+	router.HandleFunc("/api/me/picture", handler.DeleteProfilePicture).Methods(http.MethodDelete)
 }
 
 func testProfileHandlerEnd() {
@@ -310,6 +311,24 @@ func initChangeProfPicRequest() {
 
 func testUpdateUserProfilePicture(t *testing.T, user *auth.User, req *http.Request, expectedStatusCode int) {
 	req = setRequestUserContext(req, user)
+	res := httptest.NewRecorder()
+	router.ServeHTTP(res, req)
+	assert.Equal(t, expectedStatusCode, res.Code)
+}
+
+func TestDeleteProfilePicture(t *testing.T) {
+	testProfileHandlerInit(t)
+	mockRepo.EXPECT().deleteUserPicture(&authenticatedUser).Return(nil)
+
+	testDeleteUserProfilePicture(t, &authenticatedUser, http.StatusOK)
+
+	testProfileHandlerEnd()
+}
+
+func testDeleteUserProfilePicture(t *testing.T, user *auth.User, expectedStatusCode int) {
+	req, err := http.NewRequest(http.MethodDelete, "/api/me/picture", nil)
+	req = setRequestUserContext(req, user)
+	require.Nil(t, err)
 	res := httptest.NewRecorder()
 	router.ServeHTTP(res, req)
 	assert.Equal(t, expectedStatusCode, res.Code)
