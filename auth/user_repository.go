@@ -93,6 +93,7 @@ func (repo *userRepository) getUserByEmail(email string) (*User, error) {
 	}
 	var user User
 	row.Next()
+	defer row.Close()
 	err = row.StructScan(&user)
 	if err != nil {
 		return nil, err
@@ -122,6 +123,7 @@ func (repo *userRepository) getUserByResetPasswordToken(token string) (*User, er
 	}
 	var user User
 	row.Next()
+	defer row.Close()
 	err = row.StructScan(&user)
 	if err != nil {
 		return nil, err
@@ -136,6 +138,7 @@ func (repo *userRepository) getUserById(id int) (*User, error) {
 	}
 	var user User
 	row.Next()
+	defer row.Close()
 	err = row.StructScan(&user)
 	if err != nil {
 		return nil, err
