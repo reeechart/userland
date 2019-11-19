@@ -22,5 +22,5 @@ const (
 	TOKEN_INVALID_SIGNATURE                = 118
 	TOKEN_INVALID_CONTENT                  = 119
 	TOKEN_EXPIRED                          = 120
-	TOKEN_EMAIL_DOES_NOT_EXIST             = 121
+	USER_ID_DOES_NOT_EXIST                 = 121
 )
