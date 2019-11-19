@@ -3,12 +3,9 @@ package response
 import (
 	"encoding/json"
 	"net/http"
-)
 
-type ErrorResponse struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-}
+	ulanderrors "userland/errors"
+)
 
 func respondWithJSON(w http.ResponseWriter, statusCode int, payload interface{}) {
 	response_body, _ := json.Marshal(payload)
@@ -26,14 +23,14 @@ func RespondSuccessWithBody(w http.ResponseWriter, payload interface{}) {
 	respondWithJSON(w, http.StatusOK, payload)
 }
 
-func RespondBadRequest(w http.ResponseWriter, errCode int, err error) {
-	respondWithJSON(w, http.StatusBadRequest, ErrorResponse{errCode, err.Error()})
+func RespondBadRequest(w http.ResponseWriter, err ulanderrors.UserlandError) {
+	respondWithJSON(w, http.StatusBadRequest, err)
 }
 
-func RespondUnauthorized(w http.ResponseWriter, errCode int, err error) {
-	respondWithJSON(w, http.StatusUnauthorized, ErrorResponse{errCode, err.Error()})
+func RespondUnauthorized(w http.ResponseWriter, err ulanderrors.UserlandError) {
+	respondWithJSON(w, http.StatusUnauthorized, err)
 }
 
-func RespondInternalError(w http.ResponseWriter, errCode int, err error) {
-	respondWithJSON(w, http.StatusInternalServerError, ErrorResponse{errCode, err.Error()})
+func RespondInternalError(w http.ResponseWriter, err ulanderrors.UserlandError) {
+	respondWithJSON(w, http.StatusInternalServerError, err)
 }

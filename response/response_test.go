@@ -2,11 +2,11 @@ package response
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+	ulanderrors "userland/errors"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -14,7 +14,12 @@ import (
 
 const (
 	SAMPLE_ERROR_CODE             = 1000
+	SAMPLE_ERROR_MESSAGE          = "sample error"
 	APPLICATION_JSON_CONTENT_TYPE = "application/json"
+)
+
+var (
+	sampleError = ulanderrors.UserlandError{Code: SAMPLE_ERROR_CODE, Message: SAMPLE_ERROR_MESSAGE}
 )
 
 func TestRespondSuccess(t *testing.T) {
@@ -45,39 +50,33 @@ func TestRespondSuccessWithBody(t *testing.T) {
 }
 
 func TestRespondBadRequest(t *testing.T) {
-	sampleErr := errors.New("sample error")
-	errorResponse := ErrorResponse{Code: SAMPLE_ERROR_CODE, Message: sampleErr.Error()}
-	expectedBody, err := json.Marshal(errorResponse)
+	expectedBody, err := json.Marshal(sampleError)
 	require.Nil(t, err)
 
 	res := httptest.NewRecorder()
-	RespondBadRequest(res, SAMPLE_ERROR_CODE, sampleErr)
+	RespondBadRequest(res, sampleError)
 	assert.Equal(t, http.StatusBadRequest, res.Code)
 	assert.Equal(t, APPLICATION_JSON_CONTENT_TYPE, res.Header().Get("Content-Type"))
 	assert.Equal(t, string(expectedBody), res.Body.String())
 }
 
 func TestRespondUnauthorized(t *testing.T) {
-	sampleErr := errors.New("sample unauthorized")
-	errorResponse := ErrorResponse{Code: SAMPLE_ERROR_CODE, Message: sampleErr.Error()}
-	expectedBody, err := json.Marshal(errorResponse)
+	expectedBody, err := json.Marshal(sampleError)
 	require.Nil(t, err)
 
 	res := httptest.NewRecorder()
-	RespondUnauthorized(res, SAMPLE_ERROR_CODE, sampleErr)
+	RespondUnauthorized(res, sampleError)
 	assert.Equal(t, http.StatusUnauthorized, res.Code)
 	assert.Equal(t, APPLICATION_JSON_CONTENT_TYPE, res.Header().Get("Content-Type"))
 	assert.Equal(t, string(expectedBody), res.Body.String())
 }
 
 func TestRespondInternalError(t *testing.T) {
-	sampleErr := errors.New("sample internal server error")
-	errorResponse := ErrorResponse{Code: SAMPLE_ERROR_CODE, Message: sampleErr.Error()}
-	expectedBody, err := json.Marshal(errorResponse)
+	expectedBody, err := json.Marshal(sampleError)
 	require.Nil(t, err)
 
 	res := httptest.NewRecorder()
-	RespondInternalError(res, SAMPLE_ERROR_CODE, sampleErr)
+	RespondInternalError(res, sampleError)
 	assert.Equal(t, http.StatusInternalServerError, res.Code)
 	assert.Equal(t, APPLICATION_JSON_CONTENT_TYPE, res.Header().Get("Content-Type"))
 	assert.Equal(t, string(expectedBody), res.Body.String())

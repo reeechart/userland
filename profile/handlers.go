@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"userland/auth"
+	ulanderrors "userland/errors"
 	"userland/response"
 )
 
@@ -35,20 +36,19 @@ func (handler ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Reque
 	err = json.NewDecoder(r.Body).Decode(&userInfo)
 
 	if err != nil {
-		response.RespondBadRequest(w, REQUEST_BODY_UNDECODABLE, err)
+		response.RespondBadRequest(w, ulanderrors.ErrParseBody)
 		return
 	}
 
 	if !userInfo.hasValidProfile() {
-		err = errors.New("Invalid user profile")
-		response.RespondBadRequest(w, USER_INFO_INVALID, err)
+		response.RespondBadRequest(w, ulanderrors.ErrUpdateProfileUserInfoInvalid)
 		return
 	}
 
 	err = handler.ProfileRepo.updateUserProfile(user, userInfo)
 
 	if err != nil {
-		response.RespondBadRequest(w, UNABLE_TO_UPDATE_PROFILE, err)
+		response.RespondBadRequest(w, ulanderrors.ErrUpdateProfileQueryExec)
 		return
 	}
 
@@ -67,20 +67,19 @@ func (handler ProfileHandler) ChangeEmailAddress(w http.ResponseWriter, r *http.
 	err = json.NewDecoder(r.Body).Decode(&emailReq)
 
 	if err != nil {
-		response.RespondBadRequest(w, REQUEST_BODY_UNDECODABLE, err)
+		response.RespondBadRequest(w, ulanderrors.ErrParseBody)
 		return
 	}
 
 	if !emailReq.hasValidEmail() {
-		err = errors.New("Invalid email address")
-		response.RespondBadRequest(w, EMAIL_INVALID, err)
+		response.RespondBadRequest(w, ulanderrors.ErrChangeEmailInvalidEmail)
 		return
 	}
 
 	err = handler.ProfileRepo.changeUserEmail(user, emailReq.NewEmail)
 
 	if err != nil {
-		response.RespondBadRequest(w, UNABLE_TO_EXEC_UPDATE_EMAIL_QUERY, err)
+		response.RespondBadRequest(w, ulanderrors.ErrChangeEmailQueryExec)
 		return
 	}
 
@@ -94,26 +93,25 @@ func (handler ProfileHandler) ChangePassword(w http.ResponseWriter, r *http.Requ
 	err = json.NewDecoder(r.Body).Decode(&passwordReq)
 
 	if err != nil {
-		response.RespondBadRequest(w, REQUEST_BODY_UNDECODABLE, err)
+		response.RespondBadRequest(w, ulanderrors.ErrParseBody)
 		return
 	}
 
 	if !passwordReq.hasValidPassword() {
-		err = errors.New("Password is invalid")
-		response.RespondBadRequest(w, CHANGE_PASSWORD_PASSWORD_INVALID, err)
+		response.RespondBadRequest(w, ulanderrors.ErrChangePasswordInvalidPassword)
 		return
 	}
 
 	if !passwordReq.hasMatchingNewPassword() {
 		err = errors.New("Passwords don't match")
-		response.RespondBadRequest(w, CHANGE_PASSWORD_PASSWORD_NOT_MATCH, err)
+		response.RespondBadRequest(w, ulanderrors.ErrChangePasswordPasswordUnmatch)
 		return
 	}
 
 	err = handler.ProfileRepo.changeUserPassword(user, passwordReq.PasswordCurrent, passwordReq.Password)
 
 	if err != nil {
-		response.RespondBadRequest(w, CHANGE_PASSWORD_INCORRECT_CURRENT_PASSWORD, err)
+		response.RespondBadRequest(w, ulanderrors.ErrChangePasswordIncorrectCurrentPass)
 		return
 	}
 
@@ -127,14 +125,14 @@ func (handler ProfileHandler) DeleteAccount(w http.ResponseWriter, r *http.Reque
 	err = json.NewDecoder(r.Body).Decode(&delReq)
 
 	if err != nil {
-		response.RespondBadRequest(w, REQUEST_BODY_UNDECODABLE, err)
+		response.RespondBadRequest(w, ulanderrors.ErrParseBody)
 		return
 	}
 
 	err = handler.ProfileRepo.deleteUser(user, delReq.Password)
 
 	if err != nil {
-		response.RespondBadRequest(w, DELETE_ACCOUNT_INCORRECT_PASSWORD, err)
+		response.RespondBadRequest(w, ulanderrors.ErrDeleteAccountIncorrectPass)
 		return
 	}
 
@@ -146,7 +144,7 @@ func (handler ProfileHandler) UpdateProfilePicture(w http.ResponseWriter, r *htt
 	file, fileHeader, err := r.FormFile("file")
 
 	if err != nil {
-		response.RespondBadRequest(w, PICTURE_CANNOT_BE_FETCHED_FROM_FORM, err)
+		response.RespondBadRequest(w, ulanderrors.ErrUpdatePicturePicCantBeFetched)
 		return
 	}
 
@@ -156,14 +154,14 @@ func (handler ProfileHandler) UpdateProfilePicture(w http.ResponseWriter, r *htt
 	_, err = file.Read(picture)
 
 	if err != nil {
-		response.RespondBadRequest(w, PICTURE_CANNOT_BE_READ, err)
+		response.RespondBadRequest(w, ulanderrors.ErrUpdatePictureCantBeRead)
 		return
 	}
 
 	err = handler.ProfileRepo.updateUserPicture(user, picture)
 
 	if err != nil {
-		response.RespondBadRequest(w, PICTURE_FAILED_TO_EXEC_QUERY, err)
+		response.RespondBadRequest(w, ulanderrors.ErrUpdatePictureQueryExec)
 		return
 	}
 
@@ -176,7 +174,7 @@ func (handler ProfileHandler) DeleteProfilePicture(w http.ResponseWriter, r *htt
 	err = handler.ProfileRepo.deleteUserPicture(user)
 
 	if err != nil {
-		response.RespondBadRequest(w, PICTURE_FAILED_TO_EXEC_QUERY, err)
+		response.RespondBadRequest(w, ulanderrors.ErrUpdatePictureQueryExec)
 		return
 	}
 

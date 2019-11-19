@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"userland/config"
+	ulanderrors "userland/errors"
 	"userland/response"
 
 	"github.com/dgrijalva/jwt-go"
@@ -15,10 +16,10 @@ func WithVerifyJWT(next http.HandlerFunc) http.HandlerFunc {
 
 		if err != nil {
 			if err == http.ErrNoCookie {
-				response.RespondUnauthorized(w, TOKEN_NOT_PROVIDED, err)
+				response.RespondUnauthorized(w, ulanderrors.ErrTokenNotProvided)
 				return
 			}
-			response.RespondBadRequest(w, TOKEN_CANNOT_BE_FOUND, err)
+			response.RespondBadRequest(w, ulanderrors.ErrTokenNotFound)
 			return
 		}
 
@@ -31,22 +32,22 @@ func WithVerifyJWT(next http.HandlerFunc) http.HandlerFunc {
 
 		if err != nil {
 			if err == jwt.ErrSignatureInvalid {
-				response.RespondUnauthorized(w, TOKEN_INVALID_SIGNATURE, err)
+				response.RespondUnauthorized(w, ulanderrors.ErrTokenInvalidSignature)
 				return
 			}
-			response.RespondBadRequest(w, TOKEN_INVALID_CONTENT, err)
+			response.RespondBadRequest(w, ulanderrors.ErrTokenInvalidContent)
 			return
 		}
 
 		if !token.Valid {
-			response.RespondUnauthorized(w, TOKEN_EXPIRED, err)
+			response.RespondUnauthorized(w, ulanderrors.ErrTokenExpired)
 			return
 		}
 
 		userRepo := GetUserRepository()
 		user, err := userRepo.getUserById(claims.UserId)
 		if err != nil {
-			response.RespondBadRequest(w, USER_ID_DOES_NOT_EXIST, err)
+			response.RespondBadRequest(w, ulanderrors.ErrTokenUserIdDoesNotExist)
 			return
 		}
 
