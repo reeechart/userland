@@ -34,6 +34,7 @@ var (
 
 	loginnableUser   User
 	unloginnableUser User
+	unverifiedUser   User
 
 	userWithEmail    User
 	userWithoutEmail User
@@ -189,6 +190,7 @@ func TestLogin(t *testing.T) {
 
 	testLoginUser(t, loginnableUser, http.StatusOK)
 	testLoginUser(t, unloginnableUser, http.StatusBadRequest)
+	testLoginUser(t, unverifiedUser, http.StatusUnauthorized)
 
 	testAuthHandlerEnd()
 }
@@ -197,15 +199,24 @@ func initRepoForLogin() {
 	loginnableUser = User{
 		Email:    "user@example.com",
 		Password: "password",
+		Verified: true,
 	}
 
 	unloginnableUser = User{
 		Email: "user@example.com",
 	}
 
+	unverifiedUser = User{
+		Email:    "anotheruser@example.com",
+		Password: "password",
+		Verified: false,
+	}
+
 	gomock.InOrder(
 		mockRepo.EXPECT().loginUser(loginnableUser.Email, loginnableUser.Password).Return(nil),
 		mockRepo.EXPECT().getUserByEmail(loginnableUser.Email).Return(&loginnableUser, nil),
+		mockRepo.EXPECT().loginUser(unverifiedUser.Email, unverifiedUser.Password).Return(nil),
+		mockRepo.EXPECT().getUserByEmail(unverifiedUser.Email).Return(&unverifiedUser, nil),
 	)
 }
 
