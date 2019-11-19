@@ -1,0 +1,91 @@
+package errors
+
+const (
+	// request body
+	REQUEST_BODY_UNDECODABLE         = 1000
+	REQUEST_BODY_UNDECODABLE_MESSAGE = "invalid request"
+
+	// auth errors
+	REGISTRATION_BODY_INCOMPLETE         = 1101
+	REGISTRATION_BODY_INCOMPLETE_MESSAGE = "registration data is incomplete"
+
+	REGISTRATION_BODY_INVALID         = 1102
+	REGISTRATION_BODY_INVALID_MESSAGE = "one or more registration component is invalid"
+
+	REGISTRATION_PASSWORD_NOT_MATCH   = 1103
+	REGISTRATION_UNABLE_TO_EXEC_QUERY = 1104
+	REGISTRATION_GENERAL_MESSAGE      = "unable to register"
+
+	VERIFICATION_BODY_INCOMPLETE         = 1105
+	VERIFICATION_BODY_INCOMPLETE_MESSAGE = "verification data is incomplete"
+
+	VERIFICATION_UNABLE_TO_EXEC_QUERY = 1106
+	VERIFICATION_GENERAL_MESSAGE      = "unable to verify account"
+
+	LOGIN_INCOMPLETE_CREDENTIALS         = 1107
+	LOGIN_INCOMPLETE_CREDENTIALS_MESSAGE = "login credentials is incomplete"
+
+	LOGIN_PASSWORD_NOT_MATCH_OR_UNVERIFIED         = 1108
+	LOGIN_PASSWORD_NOT_MATCH_OR_UNVERIFIED_MESSAGE = "incorrect password or unverified account"
+
+	LOGIN_JWT_ERROR         = 1109
+	LOGIN_JWT_ERROR_MESSAGE = "unable to create token"
+
+	FORGET_PASSWORD_INCOMPLETE_CREDENTIALS         = 1110
+	FORGET_PASSWORD_INCOMPLETE_CREDENTIALS_MESSAGE = "forget password credentials is incomplete"
+
+	FORGET_PASSWORD_UNABLE_TO_EXEC_QUERY = 1111
+	FORGET_PASSWORD_GENERAL_MESSAGE      = "unable to execute forget password"
+
+	RESET_PASSWORD_BODY_INVALID         = 1112
+	RESET_PASSWORD_BODY_INVALID_MESSAGE = "one or more components in your reset password data is invalid"
+
+	RESET_PASSWORD_PASSWORD_NOT_MATCH         = 1113
+	RESET_PASSWORD_PASSWORD_NOT_MATCH_MESSAGE = "your password and confirmation password don't match"
+
+	RESET_PASSWORD_PASSWORD_INVALID         = 1114
+	RESET_PASSWORD_PASSWORD_INVALID_MESSAGE = "password given is invalid, make sure its length is 6-128 chars long"
+
+	RESET_PASSWORD_UNABLE_TO_EXEC_QUERY = 1115
+	RESET_PASSWORD_GENERAL_MESSAGE      = "unable to reset password"
+
+	TOKEN_NOT_PROVIDED         = 1116
+	TOKEN_NOT_PROVIDED_MESSAGE = "no token provided, please login"
+
+	TOKEN_CANNOT_BE_FOUND        = 1117
+	TOKEN_INVALID_SIGNATURE      = 1118
+	TOKEN_INVALID_CONTENT        = 1119
+	TOKEN_EXPIRED                = 1120
+	TOKEN_USER_ID_DOES_NOT_EXIST = 1121
+	TOKEN_GENERAL_MESSAGE        = "invalid token"
+
+	// profile errors
+	UPDATE_PROFILE_USER_INFO_INVALID         = 1201
+	UPDATE_PROFILE_USER_INFO_INVALID_MESSAGE = "new user info is invalid"
+
+	UPDATE_PROFILE_UNABLE_TO_EXEC_QUERY         = 1202
+	UPDATE_PROFILE_UNABLE_TO_EXEC_QUERY_MESSAGE = "unable to update profile"
+
+	CHANGE_EMAIL_UNABLE_TO_EXEC_QUERY         = 1203
+	CHANGE_EMAIL_UNABLE_TO_EXEC_QUERY_MESSAGE = "unable to update email"
+
+	CHANGE_EMAIL_EMAIL_INVALID         = 1204
+	CHANGE_EMAIL_EMAIL_INVALID_MESSAGE = "email is not in valid format"
+
+	CHANGE_PASSWORD_PASSWORD_NOT_MATCH         = 1205
+	CHANGE_PASSWORD_PASSWORD_NOT_MATCH_MESSAGE = "password and confirmation password don't match"
+
+	CHANGE_PASSWORD_PASSWORD_INVALID         = 1206
+	CHANGE_PASSWORD_PASSWORD_INVALID_MESSAGE = "password is invalid, make sure its length is 6-128 chars long"
+
+	CHANGE_PASSWORD_INCORRECT_CURRENT_PASSWORD = 1207
+	DELETE_ACCOUNT_INCORRECT_PASSWORD          = 1208
+	INCORRECT_PASSWORD_GENERAL_MESSAGE         = "incorrect current password"
+
+	PICTURE_UNABLE_TO_EXEC_QUERY = 1209
+	PICTURE_GENERAL_MESSAGE      = "unable to update profile picture"
+
+	PICTURE_CANNOT_BE_FETCHED_FROM_FORM = 1210
+	PICTURE_CANNOT_BE_READ              = 1211
+	PICTURE_FORMAT_GENERAL_MESSAGE      = "picture is sent in invalid format"
+)
