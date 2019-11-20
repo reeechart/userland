@@ -20,12 +20,11 @@ func (middleware AuthMiddleware) WithVerifyJWT(next http.HandlerFunc) http.Handl
 		cookie, err := r.Cookie("token")
 
 		if err != nil {
+			log.Info(err)
 			if err == http.ErrNoCookie {
-				log.Info(err)
 				response.RespondUnauthorized(w, ulanderrors.ErrTokenNotProvided)
 				return
 			}
-			log.Info(err)
 			response.RespondBadRequest(w, ulanderrors.ErrTokenNotFound)
 			return
 		}
@@ -38,12 +37,11 @@ func (middleware AuthMiddleware) WithVerifyJWT(next http.HandlerFunc) http.Handl
 		})
 
 		if err != nil {
+			log.Info(err)
 			if err == jwt.ErrSignatureInvalid {
-				log.Info(err)
 				response.RespondUnauthorized(w, ulanderrors.ErrTokenInvalidSignature)
 				return
 			}
-			log.Info(err)
 			response.RespondBadRequest(w, ulanderrors.ErrTokenInvalidContent)
 			return
 		}
