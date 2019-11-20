@@ -6,6 +6,7 @@ import (
 )
 
 type databaseConfig struct {
+	user   string
 	dbname string
 	host   string
 	port   string
@@ -21,11 +22,12 @@ const (
 
 func GetDatabaseConnectionString() string {
 	dbConfig := getDatabaseConfig()
-	return fmt.Sprintf("dbname=%s host=%s port=%s sslmode=%s", dbConfig.dbname, dbConfig.host, dbConfig.port, dbConfig.ssl)
+	return fmt.Sprintf("user=%s dbname=%s host=%s port=%s sslmode=%s", dbConfig.user, dbConfig.dbname, dbConfig.host, dbConfig.port, dbConfig.ssl)
 }
 
 func getDatabaseConfig() *databaseConfig {
 	return &databaseConfig{
+		user:   os.Getenv("DB_USER"),
 		dbname: os.Getenv("DB_NAME"),
 		host:   os.Getenv("DB_HOST"),
 		port:   os.Getenv("DB_PORT"),
