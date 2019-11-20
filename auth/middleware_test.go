@@ -50,8 +50,8 @@ func TestWithVerifyJWT(t *testing.T) {
 
 	testJWTVerificationRequest(t, validReq, http.StatusOK)
 	testJWTVerificationRequest(t, cookielessReq, http.StatusUnauthorized)
-	testJWTVerificationRequest(t, temperedTokenReq, http.StatusBadRequest)
-	testJWTVerificationRequest(t, expiredTokenReq, http.StatusBadRequest)
+	testJWTVerificationRequest(t, temperedTokenReq, http.StatusUnauthorized)
+	testJWTVerificationRequest(t, expiredTokenReq, http.StatusUnauthorized)
 
 	testAuthMiddlewareEnd()
 }

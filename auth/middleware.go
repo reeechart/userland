@@ -42,6 +42,17 @@ func (middleware AuthMiddleware) WithVerifyJWT(next http.HandlerFunc) http.Handl
 				response.RespondUnauthorized(w, ulanderrors.ErrTokenInvalidSignature)
 				return
 			}
+			valErr, ok := err.(*jwt.ValidationError)
+			if ok {
+				if (valErr.Errors & jwt.ValidationErrorSignatureInvalid) != 0 {
+					response.RespondUnauthorized(w, ulanderrors.ErrTokenInvalidSignature)
+					return
+				}
+				if (valErr.Errors & jwt.ValidationErrorExpired) != 0 {
+					response.RespondUnauthorized(w, ulanderrors.ErrTokenExpired)
+					return
+				}
+			}
 			response.RespondBadRequest(w, ulanderrors.ErrTokenInvalidContent)
 			return
 		}
