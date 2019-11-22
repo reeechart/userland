@@ -154,7 +154,7 @@ func (repo *userRepository) getUserById(id int) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	row, err := stmt.Queryx(SELECT_USER_BY_ID_QUERY, id)
+	row, err := stmt.Queryx(id)
 	if err != nil {
 		return nil, err
 	}
