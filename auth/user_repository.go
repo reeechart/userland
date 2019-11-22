@@ -44,7 +44,11 @@ func (repo *userRepository) createNewUser(user userRegistration) error {
 	if err != nil {
 		return err
 	}
-	_, err = repo.db.Queryx(CREATE_USER_QUERY, user.Fullname, user.Email, string(passwordHash), generateToken())
+	stmt, err := repo.db.Preparex(CREATE_USER_QUERY)
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Queryx(user.Fullname, user.Email, string(passwordHash), generateToken())
 	return err
 }
 
@@ -58,7 +62,11 @@ func (repo *userRepository) verifyUser(recipient string, token string) error {
 		return errors.New("Tokens don't match")
 	}
 
-	_, err = repo.db.Queryx(UPDATE_VERIFIED_QUERY, user.Id)
+	stmt, err := repo.db.Preparex(UPDATE_VERIFIED_QUERY)
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Queryx(user.Id)
 	return err
 }
 
@@ -76,12 +84,20 @@ func (repo *userRepository) forgetPassword(email string) error {
 	if err != nil {
 		return err
 	}
-	_, err = repo.db.Queryx(UPDATE_RESET_PASS_TOKEN_QUERY, generateToken(), user.Id)
+	stmt, err := repo.db.Preparex(UPDATE_RESET_PASS_TOKEN_QUERY)
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Queryx(generateToken(), user.Id)
 	return err
 }
 
 func (repo *userRepository) getUserByEmail(email string) (*User, error) {
-	row, err := repo.db.Queryx(SELECT_USER_BY_EMAIL_QUERY, email)
+	stmt, err := repo.db.Preparex(SELECT_USER_BY_EMAIL_QUERY)
+	if err != nil {
+		return nil, err
+	}
+	row, err := stmt.Queryx(email)
 	if err != nil {
 		return nil, err
 	}
@@ -106,12 +122,20 @@ func (repo *userRepository) resetPassword(token string, password string) error {
 		return err
 	}
 
-	_, err = repo.db.Queryx(RESET_PASSWORD_QUERY, passwordHash, user.Id)
+	stmt, err := repo.db.Preparex(RESET_PASSWORD_QUERY)
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Queryx(passwordHash, user.Id)
 	return err
 }
 
 func (repo *userRepository) getUserByResetPasswordToken(token string) (*User, error) {
-	row, err := repo.db.Queryx(SELECT_USER_BY_RESET_PASS_TOKEN_QUERY, token)
+	stmt, err := repo.db.Preparex(SELECT_USER_BY_RESET_PASS_TOKEN_QUERY)
+	if err != nil {
+		return nil, err
+	}
+	row, err := stmt.Queryx(token)
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +150,11 @@ func (repo *userRepository) getUserByResetPasswordToken(token string) (*User, er
 }
 
 func (repo *userRepository) getUserById(id int) (*User, error) {
-	row, err := repo.db.Queryx(SELECT_USER_BY_ID_QUERY, id)
+	stmt, err := repo.db.Preparex(SELECT_USER_BY_ID_QUERY)
+	if err != nil {
+		return nil, err
+	}
+	row, err := stmt.Queryx(SELECT_USER_BY_ID_QUERY, id)
 	if err != nil {
 		return nil, err
 	}
