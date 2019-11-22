@@ -84,7 +84,7 @@ func (repo *profileRepository) deleteUser(user *auth.User, password string) erro
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Queryx(DELETE_USER_BY_ID_QUERY, user.Id)
+	_, err = stmt.Queryx(user.Id)
 	return err
 }
 
