@@ -36,12 +36,20 @@ func GetProfileRepository() *profileRepository {
 }
 
 func (repo *profileRepository) updateUserProfile(user *auth.User, newUserProfile UserProfile) error {
-	_, err := repo.db.Queryx(UPDATE_PROFILE_BY_ID_QUERY, newUserProfile.Fullname, newUserProfile.Location, newUserProfile.Bio, newUserProfile.Web, user.Id)
+	stmt, err := repo.db.Preparex(UPDATE_PROFILE_BY_ID_QUERY)
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Queryx(newUserProfile.Fullname, newUserProfile.Location, newUserProfile.Bio, newUserProfile.Web, user.Id)
 	return err
 }
 
 func (repo *profileRepository) changeUserEmail(user *auth.User, newEmail string) error {
-	_, err := repo.db.Queryx(CHANGE_EMAIL_BY_ID_QUERY, newEmail, user.Id)
+	stmt, err := repo.db.Preparex(CHANGE_EMAIL_BY_ID_QUERY)
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Queryx(newEmail, user.Id)
 	return err
 }
 
@@ -57,7 +65,11 @@ func (repo *profileRepository) changeUserPassword(user *auth.User, oldPassword s
 		return err
 	}
 
-	_, err = repo.db.Queryx(CHANGE_PASSWORD_BY_ID_QUERY, passwordHash, user.Id)
+	stmt, err := repo.db.Preparex(CHANGE_PASSWORD_BY_ID_QUERY)
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Queryx(passwordHash, user.Id)
 	return err
 }
 
@@ -68,16 +80,28 @@ func (repo *profileRepository) deleteUser(user *auth.User, password string) erro
 		return err
 	}
 
-	_, err = repo.db.Queryx(DELETE_USER_BY_ID_QUERY, user.Id)
+	stmt, err := repo.db.Preparex(DELETE_USER_BY_ID_QUERY)
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Queryx(DELETE_USER_BY_ID_QUERY, user.Id)
 	return err
 }
 
 func (repo *profileRepository) updateUserPicture(user *auth.User, picture []byte) error {
-	_, err = repo.db.Queryx(UPDATE_PROFILE_PICTURE_BY_ID_QUERY, picture, user.Id)
+	stmt, err := repo.db.Preparex(UPDATE_PROFILE_PICTURE_BY_ID_QUERY)
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Queryx(picture, user.Id)
 	return err
 }
 
 func (repo *profileRepository) deleteUserPicture(user *auth.User) error {
-	_, err = repo.db.Queryx(DELETE_PROFILE_PICTURE_BY_ID_QUERY, user.Id)
+	stmt, err := repo.db.Preparex(DELETE_PROFILE_PICTURE_BY_ID_QUERY)
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Queryx(user.Id)
 	return err
 }
