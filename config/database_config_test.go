@@ -13,6 +13,7 @@ var (
 
 func testDbConfigInit() {
 	dbConfigVars = map[string]string{
+		"DB_USER":    "postgres",
 		"DB_NAME":    "userland",
 		"DB_HOST":    "localhost",
 		"DB_PORT":    "5432",
@@ -34,6 +35,7 @@ func TestDatabaseConfig(t *testing.T) {
 	testDbConfigInit()
 
 	dbConfig := getDatabaseConfig()
+	assert.Equal(t, dbConfigVars["DB_USER"], dbConfig.user)
 	assert.Equal(t, dbConfigVars["DB_NAME"], dbConfig.dbname)
 	assert.Equal(t, dbConfigVars["DB_HOST"], dbConfig.host)
 	assert.Equal(t, dbConfigVars["DB_PORT"], dbConfig.port)
@@ -44,6 +46,6 @@ func TestDatabaseConfig(t *testing.T) {
 
 func TestDatabaseConnString(t *testing.T) {
 	testDbConfigInit()
-	assert.Equal(t, "dbname=userland host=localhost port=5432 sslmode=disable", GetDatabaseConnectionString())
+	assert.Equal(t, "user=postgres dbname=userland host=localhost port=5432 sslmode=disable", GetDatabaseConnectionString())
 	testDbConfigEnd()
 }
