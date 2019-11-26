@@ -1,5 +1,7 @@
 # Userland
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/reeechart/userland)](https://goreportcard.com/report/github.com/reeechart/userland)
+
 ## Project Description
 Given a list of API Contracts based on [Simukti's Userland APIAry](https://userland.docs.apiary.io), implement all of the API using Golang
 
